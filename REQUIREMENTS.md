@@ -1,0 +1,20 @@
+- user can register account
+- account has email, password and mobile phone number
+- account has payment methods
+- account has required membership
+- have multiple membership plans e.g. standard, premium
+- users can have membership auto-renew
+- user can cancel membership
+- user can reset forgotten password
+- user can change account password
+- user can sign out of account
+- account has profiles e.g. dad, kids, max 5
+- profile has optional pin
+- profile has preferences (languages (display language, audio+subtitle languages), playback settings (autoplay next ep series, autoplay preveiws browsing), viewing activity (watch/rating, hide))
+- can browse and watch content (films and series)
+- series have seasons
+- seasons have episodes
+- content has title, synopsis, release year, age rating (e.g. pg), cast, genres
+- have a new & popular section
+- have a "my list" of series and films
+- can rate content, thumbs up ("I like this"), thumbs down ("Not for me"), double thumbs up ("Love this!")
