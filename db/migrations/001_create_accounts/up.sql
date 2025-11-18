@@ -1,5 +1,7 @@
 BEGIN;
 
+CREATE TYPE membership_status AS ENUM ('active', 'expired', 'cancelled');
+
 CREATE TABLE accounts (
     id BIGSERIAL PRIMARY KEY,
     email TEXT NOT NULL UNIQUE,
@@ -22,8 +24,6 @@ CREATE TABLE account_membership_plans (
     name TEXT NOT NULL UNIQUE,
     monthly_price NUMERIC(12, 2) CHECK(monthly_price > 0)
 );
-
-CREATE TYPE membership_status AS ENUM ('active', 'expired', 'cancelled');
 
 CREATE TABLE account_memberships (
     id BIGSERIAL PRIMARY KEY,
