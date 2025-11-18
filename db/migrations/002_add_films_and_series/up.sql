@@ -1,5 +1,7 @@
 BEGIN;
 
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
 CREATE TYPE content_age_rating AS ENUM ('U', 'PG', '12', '15', '18');
 CREATE TYPE content_rating AS ENUM ('thumbs_up', 'thumbs_down', 'double_thumbs_up');
 

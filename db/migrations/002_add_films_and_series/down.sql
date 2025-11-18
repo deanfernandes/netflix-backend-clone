@@ -32,4 +32,6 @@ DROP TABLE IF EXISTS films;
 DROP TYPE IF EXISTS content_rating;
 DROP TYPE IF EXISTS content_age_rating;
 
+DROP EXTENSION IF EXISTS pg_trgm;
+
 COMMIT;
