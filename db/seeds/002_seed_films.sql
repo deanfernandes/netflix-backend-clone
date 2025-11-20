@@ -1,6 +1,5 @@
 BEGIN;
 
--- Seed 1,000 films with random titles, synopsis, release_year, and age_rating
 WITH film_seed AS (
     SELECT
         'Film ' || g AS title,
