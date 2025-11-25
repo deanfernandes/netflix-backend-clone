@@ -1,0 +1,193 @@
+enum MembershipStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+enum AgeRating {
+  G
+  PG
+  PG13
+  R
+  NC17
+}
+
+enum PlaybackAutoplay {
+  NEXT_EPISODE
+  PREVIEW
+}
+
+enum RatingType {
+  THUMBS_UP
+  THUMBS_DOWN
+  DOUBLE_THUMBS_UP
+}
+
+type Account {
+  id: ID!
+  email: String!
+  mobileNumber: String!
+  createdAt: String!
+  profiles: [Profile!]!
+  memberships: [Membership!]!
+  paymentMethods: [PaymentMethod!]!
+}
+
+type Profile {
+  id: ID!
+  name: String!
+  pinHash: String
+  account: Account!
+  preferences: Preferences!
+  viewingActivity: [ViewingActivity!]!
+}
+
+type Preferences {
+  displayLanguage: String
+  audioLanguage: String
+  subtitleLanguage: String
+  autoplayNextEpisode: Boolean
+  autoplayPreviews: Boolean
+}
+
+type ViewingActivity {
+  content: Content!
+  watchedAt: String!
+  rating: RatingType
+  hidden: Boolean!
+}
+
+type PaymentMethod {
+  id: ID!
+  account: Account!
+  type: String!
+  last4: String!
+  expirationMonth: Int!
+  expirationYear: Int!
+  default: Boolean!
+}
+
+type MembershipPlan {
+  id: ID!
+  name: String!
+  monthlyPrice: Float!
+  memberships: [Membership!]!
+}
+
+type Membership {
+  id: ID!
+  startDate: String!
+  endDate: String!
+  status: MembershipStatus!
+  autoRenew: Boolean!
+  account: Account!
+  plan: MembershipPlan!
+  accountMembershipPrice: Float!
+}
+
+type Content {
+  id: ID!
+  title: String!
+  synopsis: String!
+  releaseYear: Int!
+  ageRating: AgeRating!
+  cast: [String!]!
+  genres: [String!]!
+  isNew: Boolean!
+  isPopular: Boolean!
+  series: Series
+}
+
+type Series {
+  id: ID!
+  seasons: [Season!]!
+}
+
+type Season {
+  id: ID!
+  seasonNumber: Int!
+  episodes: [Episode!]!
+}
+
+type Episode {
+  id: ID!
+  episodeNumber: Int!
+  title: String!
+  synopsis: String!
+  durationMinutes: Int!
+}
+
+type MyList {
+  id: ID!
+  account: Account!
+  content: [Content!]!
+}
+
+type Query {
+  accounts: [Account!]!
+  account(id: ID!): Account
+  profilesByAccount(accountId: ID!): [Profile!]!
+  membershipPlans: [MembershipPlan!]!
+  memberships: [Membership!]!
+  content(id: ID!): Content
+  allContent: [Content!]!
+  newAndPopular: [Content!]!
+  myList(accountId: ID!): [Content!]!
+}
+
+type Mutation {
+  registerAccount(
+    email: String!
+    password: String!
+    mobileNumber: String!
+  ): Account!
+  login(email: String!, password: String!): String! # returns JWT token
+  logout(accountId: ID!): Boolean!
+  resetPassword(email: String!, newPassword: String!): Boolean!
+  changePassword(
+    accountId: ID!
+    oldPassword: String!
+    newPassword: String!
+  ): Boolean!
+
+  createProfile(accountId: ID!, name: String!, pinHash: String): Profile!
+  updateProfile(id: ID!, name: String, pinHash: String): Profile!
+  deleteProfile(id: ID!): Boolean!
+
+  updatePreferences(
+    profileId: ID!
+    displayLanguage: String
+    audioLanguage: String
+    subtitleLanguage: String
+    autoplayNextEpisode: Boolean
+    autoplayPreviews: Boolean
+  ): Preferences!
+
+  addPaymentMethod(
+    accountId: ID!
+    type: String!
+    last4: String!
+    expirationMonth: Int!
+    expirationYear: Int!
+    default: Boolean!
+  ): PaymentMethod!
+  removePaymentMethod(id: ID!): Boolean!
+
+  createMembership(
+    accountId: ID!
+    planId: ID!
+    autoRenew: Boolean!
+  ): Membership!
+  cancelMembership(id: ID!): Membership!
+
+  addToMyList(accountId: ID!, contentId: ID!): MyList!
+  removeFromMyList(accountId: ID!, contentId: ID!): MyList!
+
+  rateContent(
+    profileId: ID!
+    contentId: ID!
+    rating: RatingType!
+  ): ViewingActivity!
+  markContentWatched(profileId: ID!, contentId: ID!): ViewingActivity!
+  hideContent(profileId: ID!, contentId: ID!): ViewingActivity!
+}
