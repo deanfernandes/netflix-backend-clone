@@ -4,20 +4,15 @@ enum MembershipStatus {
   CANCELLED
 }
 
-enum AgeRating {
-  G
+enum ContentAgeRating {
+  U
   PG
-  PG13
-  R
-  NC17
+  _12
+  _15
+  _18
 }
 
-enum PlaybackAutoplay {
-  NEXT_EPISODE
-  PREVIEW
-}
-
-enum RatingType {
+enum ContentRating {
   THUMBS_UP
   THUMBS_DOWN
   DOUBLE_THUMBS_UP
@@ -28,166 +23,215 @@ type Account {
   email: String!
   mobileNumber: String!
   createdAt: String!
-  profiles: [Profile!]!
-  memberships: [Membership!]!
-  paymentMethods: [PaymentMethod!]!
+
+  profiles: [AccountProfile!]!
+  memberships: [AccountMembership!]!
 }
 
-type Profile {
+type AccountProfile {
   id: ID!
   name: String!
-  pinHash: String
+  profileImageUrl: String
+  hasPin: Boolean!
+
   account: Account!
-  preferences: Preferences!
-  viewingActivity: [ViewingActivity!]!
 }
 
-type Preferences {
-  displayLanguage: String
-  audioLanguage: String
-  subtitleLanguage: String
-  autoplayNextEpisode: Boolean
-  autoplayPreviews: Boolean
-}
-
-type ViewingActivity {
-  content: Content!
-  watchedAt: String!
-  rating: RatingType
-  hidden: Boolean!
-}
-
-type PaymentMethod {
-  id: ID!
-  account: Account!
-  type: String!
-  last4: String!
-  expirationMonth: Int!
-  expirationYear: Int!
-  default: Boolean!
-}
-
-type MembershipPlan {
+type AccountMembershipPlan {
   id: ID!
   name: String!
   monthlyPrice: Float!
-  memberships: [Membership!]!
 }
 
-type Membership {
+type AccountMembership {
   id: ID!
   startDate: String!
   endDate: String!
   status: MembershipStatus!
   autoRenew: Boolean!
-  account: Account!
-  plan: MembershipPlan!
   accountMembershipPrice: Float!
+
+  account: Account!
+  accountMembershipPlan: AccountMembershipPlan!
 }
 
-type Content {
+type Film {
   id: ID!
   title: String!
   synopsis: String!
   releaseYear: Int!
-  ageRating: AgeRating!
-  cast: [String!]!
-  genres: [String!]!
-  isNew: Boolean!
-  isPopular: Boolean!
-  series: Series
+  ageRating: ContentAgeRating!
+  createdAt: String!
+  hasUserWatched: Boolean!
+  userRating: ContentRating
+  genres: [Genre!]!
+  castMembers: [CastMember!]!
 }
 
 type Series {
   id: ID!
+  title: String!
+  synopsis: String!
+  releaseYear: Int!
+  ageRating: ContentAgeRating!
+  createdAt: String!
+  hasUserWatched: Boolean!
+  userRating: ContentRating
+
   seasons: [Season!]!
+  genres: [Genre!]!
+  castMembers: [CastMember!]!
 }
 
 type Season {
   id: ID!
-  seasonNumber: Int!
+  number: Int!
+  ageRating: ContentAgeRating!
+  releaseYear: Int!
+
+  series: Series!
   episodes: [Episode!]!
 }
 
 type Episode {
   id: ID!
-  episodeNumber: Int!
   title: String!
   synopsis: String!
   durationMinutes: Int!
+  number: Int!
+
+  season: Season!
 }
 
-type MyList {
+type Genre {
   id: ID!
-  account: Account!
-  content: [Content!]!
+  name: String!
+}
+
+type CastMember {
+  id: ID!
+  name: String!
+}
+
+type Watchlist {
+  films: [WatchlistFilm!]!
+  series: [WatchlistSeries!]!
+}
+
+type WatchlistFilm {
+  film: Film!
+  addedAt: String!
+}
+
+type WatchlistSeries {
+  series: Series!
+  addedAt: String!
 }
 
 type Query {
-  accounts: [Account!]!
   account(id: ID!): Account
-  profilesByAccount(accountId: ID!): [Profile!]!
-  membershipPlans: [MembershipPlan!]!
-  memberships: [Membership!]!
-  content(id: ID!): Content
-  allContent: [Content!]!
-  newAndPopular: [Content!]!
-  myList(accountId: ID!): [Content!]!
+  accounts: [Account!]!
+
+  accountProfile(id: ID!): AccountProfile
+  accountProfiles(accountId: ID!): [AccountProfile!]!
+
+  accountMembership(id: ID!): AccountMembership
+  accountMemberships(accountId: ID!): [AccountMembership!]!
+
+  film(id: ID!): Film
+  films(
+    genreIds: [ID!]
+    ageRating: ContentAgeRating
+    search: String
+    limit: Int
+    offset: Int
+  ): [Film!]!
+  newFilms(limit: Int, offset: Int): [Film!]!
+  popularFilms(limit: Int, offset: Int): [Film!]!
+
+  series(id: ID!): Series
+  seriesList(
+    genreIds: [ID!]
+    ageRating: ContentAgeRating
+    search: String
+    limit: Int
+    offset: Int
+  ): [Series!]!
+  newSeries(limit: Int, offset: Int): [Series!]!
+  popularSeries(limit: Int, offset: Int): [Series!]!
+
+  season(id: ID!): Season
+  seasons(seriesId: ID!): [Season!]!
+
+  episode(id: ID!): Episode
+  episodes(seasonId: ID!): [Episode!]!
+
+  watchlist(profileId: ID!): Watchlist
 }
 
 type Mutation {
-  registerAccount(
-    email: String!
-    password: String!
-    mobileNumber: String!
-  ): Account!
-  login(email: String!, password: String!): String! # returns JWT token
-  logout(accountId: ID!): Boolean!
-  resetPassword(email: String!, newPassword: String!): Boolean!
-  changePassword(
+  changeAccountPassword(
     accountId: ID!
     oldPassword: String!
     newPassword: String!
   ): Boolean!
 
-  createProfile(accountId: ID!, name: String!, pinHash: String): Profile!
-  updateProfile(id: ID!, name: String, pinHash: String): Profile!
-  deleteProfile(id: ID!): Boolean!
-
-  updatePreferences(
-    profileId: ID!
-    displayLanguage: String
-    audioLanguage: String
-    subtitleLanguage: String
-    autoplayNextEpisode: Boolean
-    autoplayPreviews: Boolean
-  ): Preferences!
-
-  addPaymentMethod(
-    accountId: ID!
-    type: String!
-    last4: String!
-    expirationMonth: Int!
-    expirationYear: Int!
-    default: Boolean!
-  ): PaymentMethod!
-  removePaymentMethod(id: ID!): Boolean!
-
-  createMembership(
-    accountId: ID!
-    planId: ID!
+  updateMembershipAutoRenew(
+    accountMembershipId: ID!
     autoRenew: Boolean!
-  ): Membership!
-  cancelMembership(id: ID!): Membership!
+  ): AccountMembership!
 
-  addToMyList(accountId: ID!, contentId: ID!): MyList!
-  removeFromMyList(accountId: ID!, contentId: ID!): MyList!
+  cancelMembership(accountMembershipId: ID!): AccountMembership!
 
-  rateContent(
+  createProfile(
+    accountId: ID!
+    name: String!
+    profileImageUrl: String
+    pin: String
+  ): AccountProfile!
+
+  updateProfile(
     profileId: ID!
-    contentId: ID!
-    rating: RatingType!
-  ): ViewingActivity!
-  markContentWatched(profileId: ID!, contentId: ID!): ViewingActivity!
-  hideContent(profileId: ID!, contentId: ID!): ViewingActivity!
+    name: String
+    profileImageUrl: String
+    pin: String
+  ): AccountProfile!
+
+  deleteProfile(profileId: ID!): Boolean!
+
+  setProfilePin(profileId: ID!, pin: String!): AccountProfile!
+
+  deleteProfilePin(profileId: ID!): AccountProfile!
+
+  addFilmToWatchlist(profileId: ID!, filmId: ID!): Watchlist!
+
+  removeFilmFromWatchlist(profileId: ID!, filmId: ID!): Watchlist!
+
+  addSeriesToWatchlist(profileId: ID!, seriesId: ID!): Watchlist!
+
+  removeSeriesFromWatchlist(profileId: ID!, seriesId: ID!): Watchlist!
+
+  rateFilm(profileId: ID!, filmId: ID!, rating: ContentRating!): Film!
+
+  removeFilmRating(profileId: ID!, filmId: ID!): Film!
+
+  rateSeries(profileId: ID!, seriesId: ID!, rating: ContentRating!): Series!
+
+  removeSeriesRating(profileId: ID!, seriesId: ID!): Series!
+
+  markFilmWatched(profileId: ID!, filmId: ID!): Film!
+
+  markFilmUnwatched(profileId: ID!, filmId: ID!): Film!
+
+  markSeriesWatched(profileId: ID!, seriesId: ID!): Series!
+
+  markSeriesUnwatched(profileId: ID!, seriesId: ID!): Series!
+
+  addFilmToWatchlist(profileId: ID!, filmId: ID!): WatchlistFilm!
+
+  removeFilmFromWatchlist(profileId: ID!, filmId: ID!): WatchlistFilm!
+
+  addSeriesToWatchlist(profileId: ID!, seriesId: ID!): WatchlistSeries!
+
+  removeSeriesFromWatchlist(profileId: ID!, seriesId: ID!): WatchlistSeries!
 }
