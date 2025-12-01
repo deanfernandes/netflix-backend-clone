@@ -1,4 +1,4 @@
-import { GraphQLResolveInfo } from 'graphql';
+import type { GraphQLResolveInfo } from 'graphql';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -60,20 +60,22 @@ export type CastMember = {
   name: Scalars['String']['output'];
 };
 
-export enum ContentAgeRating {
-  Pg = 'PG',
-  U = 'U',
-  '12' = '_12',
-  '15' = '_15',
-  '18' = '_18'
-}
+export const ContentAgeRating = {
+  Pg: 'PG',
+  U: 'U',
+  '12': '_12',
+  '15': '_15',
+  '18': '_18'
+} as const;
 
-export enum ContentRating {
-  DoubleThumbsUp = 'DOUBLE_THUMBS_UP',
-  ThumbsDown = 'THUMBS_DOWN',
-  ThumbsUp = 'THUMBS_UP'
-}
+export type ContentAgeRating = typeof ContentAgeRating[keyof typeof ContentAgeRating];
+export const ContentRating = {
+  DoubleThumbsUp: 'DOUBLE_THUMBS_UP',
+  ThumbsDown: 'THUMBS_DOWN',
+  ThumbsUp: 'THUMBS_UP'
+} as const;
 
+export type ContentRating = typeof ContentRating[keyof typeof ContentRating];
 export type Episode = {
   __typename?: 'Episode';
   durationMinutes: Scalars['Int']['output'];
@@ -104,12 +106,13 @@ export type Genre = {
   name: Scalars['String']['output'];
 };
 
-export enum MembershipStatus {
-  Active = 'ACTIVE',
-  Cancelled = 'CANCELLED',
-  Expired = 'EXPIRED'
-}
+export const MembershipStatus = {
+  Active: 'ACTIVE',
+  Cancelled: 'CANCELLED',
+  Expired: 'EXPIRED'
+} as const;
 
+export type MembershipStatus = typeof MembershipStatus[keyof typeof MembershipStatus];
 export type Mutation = {
   __typename?: 'Mutation';
   addFilmToWatchlist: WatchlistFilm;

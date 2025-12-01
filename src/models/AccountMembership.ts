@@ -1,4 +1,4 @@
-import type { AccountMembershipStatus } from "./AccountMembershipStatus";
+import type { AccountMembershipStatus } from "./AccountMembershipStatus.js";
 
 export interface AccountMembership {
   id: string;

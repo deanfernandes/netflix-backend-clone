@@ -1,4 +1,4 @@
-import { ContentAgeRating } from "./Content";
+import { ContentAgeRating } from "./Content.js";
 
 export interface Season {
   id: string;

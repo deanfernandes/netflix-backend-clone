@@ -203,35 +203,17 @@ type Mutation {
 
   deleteProfilePin(profileId: ID!): AccountProfile!
 
-  addFilmToWatchlist(profileId: ID!, filmId: ID!): Watchlist!
-
-  removeFilmFromWatchlist(profileId: ID!, filmId: ID!): Watchlist!
-
-  addSeriesToWatchlist(profileId: ID!, seriesId: ID!): Watchlist!
-
-  removeSeriesFromWatchlist(profileId: ID!, seriesId: ID!): Watchlist!
+  addFilmToWatchlist(profileId: ID!, filmId: ID!): WatchlistFilm!
+  removeFilmFromWatchlist(profileId: ID!, filmId: ID!): WatchlistFilm!
+  addSeriesToWatchlist(profileId: ID!, seriesId: ID!): WatchlistSeries!
+  removeSeriesFromWatchlist(profileId: ID!, seriesId: ID!): WatchlistSeries!
 
   rateFilm(profileId: ID!, filmId: ID!, rating: ContentRating!): Film!
-
   removeFilmRating(profileId: ID!, filmId: ID!): Film!
-
   rateSeries(profileId: ID!, seriesId: ID!, rating: ContentRating!): Series!
-
   removeSeriesRating(profileId: ID!, seriesId: ID!): Series!
-
   markFilmWatched(profileId: ID!, filmId: ID!): Film!
-
   markFilmUnwatched(profileId: ID!, filmId: ID!): Film!
-
   markSeriesWatched(profileId: ID!, seriesId: ID!): Series!
-
   markSeriesUnwatched(profileId: ID!, seriesId: ID!): Series!
-
-  addFilmToWatchlist(profileId: ID!, filmId: ID!): WatchlistFilm!
-
-  removeFilmFromWatchlist(profileId: ID!, filmId: ID!): WatchlistFilm!
-
-  addSeriesToWatchlist(profileId: ID!, seriesId: ID!): WatchlistSeries!
-
-  removeSeriesFromWatchlist(profileId: ID!, seriesId: ID!): WatchlistSeries!
 }
