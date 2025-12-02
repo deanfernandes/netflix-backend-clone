@@ -1,10 +1,38 @@
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
-import { readFileSync } from "fs";
-import path from "path";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { fileURLToPath } from "url";
 import { gql } from "graphql-tag";
-import { resolvers } from "./resolvers.js";
+import {
+  Query,
+  Mutation,
+  Account,
+  AccountProfile,
+  AccountMembership,
+  Film,
+  Series,
+  Season,
+  Episode,
+  Watchlist,
+  WatchlistFilm,
+  WatchlistSeries,
+} from "./resolvers/index.js";
+
+const resolvers = {
+  Query,
+  Mutation,
+  Account,
+  AccountProfile,
+  AccountMembership,
+  Film,
+  Series,
+  Season,
+  Episode,
+  Watchlist,
+  WatchlistFilm,
+  WatchlistSeries,
+};
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
