@@ -1,55 +1,11 @@
-import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
-import { readFileSync } from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "url";
-import { gql } from "graphql-tag";
-import {
-  Query,
-  Mutation,
-  Account,
-  AccountProfile,
-  AccountMembership,
-  Film,
-  Series,
-  Season,
-  Episode,
-  Watchlist,
-  WatchlistFilm,
-  WatchlistSeries,
-} from "./resolvers/index.js";
+import PgDbClient from "./db/PgDbClient.js";
+import { createApolloServer } from "./server.js";
 
-const resolvers = {
-  Query,
-  Mutation,
-  Account,
-  AccountProfile,
-  AccountMembership,
-  Film,
-  Series,
-  Season,
-  Episode,
-  Watchlist,
-  WatchlistFilm,
-  WatchlistSeries,
-};
+const dbClient = new PgDbClient();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const server = createApolloServer(dbClient);
 
-const typeDefs = gql(
-  readFileSync(path.resolve(__dirname, "../src/schema.graphql"), {
-    encoding: "utf-8",
-  })
-);
+const { url } = await startStandaloneServer(server);
 
-async function startApolloServer() {
-  const server = new ApolloServer({ typeDefs, resolvers: {} });
-  const { url } = await startStandaloneServer(server);
-  console.log(`
-    Server is running!
-    Query at ${url}
-  `);
-}
-
-startApolloServer();
+console.log(`Server running at ${url}`);

@@ -1,5 +1,9 @@
-export const Query = {
-  account: () => {},
+import IDbClient from "../db/IDbClient.js";
+
+export const createQueryResolvers = (db: IDbClient) => ({
+  account: async (_parent: any, { id }: { id: string }) => {
+    return db.getAccountById(id);
+  },
   accounts: () => {},
 
   accountProfile: () => {},
@@ -25,4 +29,4 @@ export const Query = {
   episodes: () => {},
 
   watchlist: () => {},
-};
+});
