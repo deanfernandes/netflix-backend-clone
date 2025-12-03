@@ -6,6 +6,8 @@ const dbClient = new PgDbClient();
 
 const server = createApolloServer(dbClient);
 
-const { url } = await startStandaloneServer(server);
+const { url } = await startStandaloneServer(server, {
+  context: async () => ({ db: dbClient }),
+});
 
 console.log(`Server running at ${url}`);

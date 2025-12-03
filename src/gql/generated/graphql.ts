@@ -310,6 +310,12 @@ export type QueryAccountProfilesArgs = {
 };
 
 
+export type QueryAccountsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
 export type QueryEpisodeArgs = {
   id: Scalars['ID']['input'];
 };
@@ -646,7 +652,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   accountMemberships?: Resolver<Array<ResolversTypes['AccountMembership']>, ParentType, ContextType, RequireFields<QueryAccountMembershipsArgs, 'accountId'>>;
   accountProfile?: Resolver<Maybe<ResolversTypes['AccountProfile']>, ParentType, ContextType, RequireFields<QueryAccountProfileArgs, 'id'>>;
   accountProfiles?: Resolver<Array<ResolversTypes['AccountProfile']>, ParentType, ContextType, RequireFields<QueryAccountProfilesArgs, 'accountId'>>;
-  accounts?: Resolver<Array<ResolversTypes['Account']>, ParentType, ContextType>;
+  accounts?: Resolver<Array<ResolversTypes['Account']>, ParentType, ContextType, RequireFields<QueryAccountsArgs, 'limit' | 'offset'>>;
   episode?: Resolver<Maybe<ResolversTypes['Episode']>, ParentType, ContextType, RequireFields<QueryEpisodeArgs, 'id'>>;
   episodes?: Resolver<Array<ResolversTypes['Episode']>, ParentType, ContextType, RequireFields<QueryEpisodesArgs, 'seasonId'>>;
   film?: Resolver<Maybe<ResolversTypes['Film']>, ParentType, ContextType, RequireFields<QueryFilmArgs, 'id'>>;

@@ -130,7 +130,7 @@ type WatchlistSeries {
 
 type Query {
   account(id: ID!): Account
-  accounts: [Account!]!
+  accounts(limit: Int = 50, offset: Int = 0): [Account!]!
 
   accountProfile(id: ID!): AccountProfile
   accountProfiles(accountId: ID!): [AccountProfile!]!
