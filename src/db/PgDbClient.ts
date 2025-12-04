@@ -50,4 +50,55 @@ export default class PgDbClient implements IDbClient {
     );
     return res.rows;
   }
+
+  async getAccountMembershipById(id: string) {
+    const query = `
+    SELECT
+      id,
+      start_date,
+      end_date,
+      status,
+      auto_renew,
+      account_id,
+      account_membership_plan_id,
+      account_membership_price
+    FROM account_memberships
+    WHERE id = $1
+    LIMIT 1;
+  `;
+
+    const result = await this.pool.query(query, [id]);
+    if (result.rows.length === 0) return null;
+
+    return result.rows[0];
+  }
+
+  async getAccountMembershipsByAccountId(accountId: string) {
+    const query = `
+    SELECT
+      id,
+      start_date,
+      end_date,
+      status,
+      auto_renew,
+      account_id,
+      account_membership_plan_id,
+      account_membership_price
+    FROM account_memberships
+    WHERE account_id = $1;
+  `;
+
+    const result = await this.pool.query(query, [accountId]);
+    return result.rows;
+  }
+
+  async getAccountMembershipPlanById(id: string) {
+    const result = await this.pool.query(
+      `SELECT id, name, monthly_price FROM account_membership_plans WHERE id = $1 LIMIT 1;`,
+      [id]
+    );
+
+    if (result.rows.length === 0) return null;
+    return result.rows[0];
+  }
 }
