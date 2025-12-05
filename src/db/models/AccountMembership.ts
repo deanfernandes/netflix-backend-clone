@@ -2,11 +2,11 @@ import type { AccountMembershipStatus } from "./AccountMembershipStatus.js";
 
 export interface AccountMembership {
   id: string;
-  start_date: Date;
-  end_date: Date;
+  startDate: Date;
+  endDate: Date;
   status: AccountMembershipStatus;
-  auto_renew: boolean;
-  account_id: string;
-  account_membership_plan_id: string;
-  account_membership_price: string;
+  autoRenew: boolean;
+  accountId: string;
+  accountMembershipPlanId: string;
+  accountMembershipPrice: string;
 }

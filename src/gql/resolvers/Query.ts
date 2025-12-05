@@ -6,15 +6,7 @@ export const Query = {
     { id }: { id: string },
     ctx: { db: IDbClient }
   ) => {
-    const account = await ctx.db.getAccountById(id);
-    if (!account) return null;
-
-    return {
-      id: account.id,
-      email: account.email,
-      mobileNumber: account.mobile_number,
-      createdAt: account.created_at,
-    };
+    return await ctx.db.getAccountById(id);
   },
 
   accounts: async (
@@ -22,14 +14,7 @@ export const Query = {
     { limit, offset }: { limit?: number; offset?: number },
     ctx: { db: IDbClient }
   ) => {
-    const rows = await ctx.db.getAccounts(limit, offset);
-
-    return rows.map((account) => ({
-      id: account.id,
-      email: account.email,
-      mobileNumber: account.mobile_number,
-      createdAt: account.created_at,
-    }));
+    return await ctx.db.getAccounts(limit, offset);
   },
 
   accountProfile: async (
@@ -37,16 +22,7 @@ export const Query = {
     { id }: { id: string },
     ctx: { db: IDbClient }
   ) => {
-    const profile = await ctx.db.getAccountProfileById(id);
-    if (!profile) return null;
-
-    return {
-      id: profile.id,
-      name: profile.name,
-      profileImageUrl: profile.profile_image_url ?? null,
-      pinHash: profile.pin_hash ?? null,
-      accountId: profile.account_id,
-    };
+    return await ctx.db.getAccountProfileById(id);
   },
 
   accountProfiles: async (
@@ -54,15 +30,7 @@ export const Query = {
     { accountId }: { accountId: string },
     ctx: { db: IDbClient }
   ) => {
-    const profiles = await ctx.db.getAccountProfilesByAccountId(accountId);
-
-    return (profiles ?? []).map((profile) => ({
-      id: profile.id,
-      name: profile.name,
-      profileImageUrl: profile.profile_image_url ?? null,
-      hasPin: !!profile.pin_hash,
-      accountId: profile.account_id,
-    }));
+    return await ctx.db.getAccountProfilesByAccountId(accountId);
   },
 
   accountMembership: async (
@@ -70,19 +38,7 @@ export const Query = {
     { id }: { id: string },
     ctx: { db: IDbClient }
   ) => {
-    const m = await ctx.db.getAccountMembershipById(id);
-    if (!m) return null;
-
-    return {
-      id: m.id,
-      startDate: m.start_date,
-      endDate: m.end_date,
-      status: m.status.toUpperCase(),
-      autoRenew: m.auto_renew,
-      accountMembershipPrice: Number(m.account_membership_price),
-      accountId: m.account_id,
-      accountMembershipPlanId: m.account_membership_plan_id,
-    };
+    return await ctx.db.getAccountMembershipById(id);
   },
 
   accountMemberships: async (
@@ -90,23 +46,26 @@ export const Query = {
     { accountId }: { accountId: string },
     ctx: { db: IDbClient }
   ) => {
-    const memberships = await ctx.db.getAccountMembershipsByAccountId(
-      accountId
-    );
-
-    return (memberships ?? []).map((m) => ({
-      id: m.id,
-      startDate: m.start_date,
-      endDate: m.end_date,
-      status: m.status.toUpperCase(),
-      autoRenew: m.auto_renew,
-      accountMembershipPrice: Number(m.account_membership_price),
-      accountId: m.account_id,
-      accountMembershipPlanId: m.account_membership_plan_id,
-    }));
+    return await ctx.db.getAccountMembershipsByAccountId(accountId);
   },
 
-  film: () => {},
+  film: async (
+    _parent: any,
+    { id }: { id: string },
+    ctx: { db: IDbClient }
+  ) => {
+    const film = await ctx.db.getFilmById(id);
+    if (!film) return null;
+
+    return {
+      ...film,
+      hasUserWatched: false,
+      userRating: null,
+      genres: [],
+      castMembers: [],
+    };
+  },
+
   films: () => {},
   newFilms: () => {},
   popularFilms: () => {},

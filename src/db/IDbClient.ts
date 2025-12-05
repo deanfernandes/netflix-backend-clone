@@ -2,6 +2,7 @@ import { Account } from "./models/Account.js";
 import { AccountProfile } from "./models/AccountProfile.js";
 import { AccountMembership } from "./models/AccountMembership.js";
 import { AccountMembershipPlan } from "./models/AccountMembershipPlan.js";
+import { Film } from "./models/Film.js";
 
 export default interface IDbClient {
   getAccountById(id: string): Promise<Account | null>;
@@ -14,8 +15,9 @@ export default interface IDbClient {
   getAccountMembershipsByAccountId(
     accountId: string
   ): Promise<AccountMembership[]>;
-
   getAccountMembershipPlanById(
     id: string
   ): Promise<AccountMembershipPlan | null>;
+
+  getFilmById(id: string): Promise<Film | null>;
 }
