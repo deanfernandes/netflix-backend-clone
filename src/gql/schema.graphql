@@ -55,6 +55,11 @@ type AccountMembership {
   accountMembershipPlan: AccountMembershipPlan!
 }
 
+type Genre {
+  id: ID!
+  name: String!
+}
+
 type Film {
   id: ID!
   title: String!
@@ -62,8 +67,9 @@ type Film {
   releaseYear: Int!
   ageRating: ContentAgeRating!
   createdAt: String!
-  hasUserWatched: Boolean!
+  hasUserWatched: Boolean
   userRating: ContentRating
+
   genres: [Genre!]!
   castMembers: [CastMember!]!
 }
@@ -75,7 +81,7 @@ type Series {
   releaseYear: Int!
   ageRating: ContentAgeRating!
   createdAt: String!
-  hasUserWatched: Boolean!
+  hasUserWatched: Boolean
   userRating: ContentRating
 
   seasons: [Season!]!
@@ -101,11 +107,6 @@ type Episode {
   number: Int!
 
   season: Season!
-}
-
-type Genre {
-  id: ID!
-  name: String!
 }
 
 type CastMember {

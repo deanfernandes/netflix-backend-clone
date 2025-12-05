@@ -1,4 +1,13 @@
 import IDbClient from "../../db/IDbClient.js";
+import { ContentAgeRating } from "../../db/models/Content.js";
+
+const ageRatingMap: Record<ContentAgeRating, string> = {
+  U: "U",
+  PG: "PG",
+  "12": "_12",
+  "15": "_15",
+  "18": "_18",
+};
 
 export const Query = {
   account: async (
@@ -52,20 +61,30 @@ export const Query = {
   film: async (
     _parent: any,
     { id }: { id: string },
-    ctx: { db: IDbClient }
+    ctx: { db: IDbClient; currentAccountProfileId: string }
   ) => {
     const film = await ctx.db.getFilmById(id);
     if (!film) return null;
 
+    const hasUserWatched = await ctx.db.hasProfileWatchedFilm(
+      ctx.currentAccountProfileId,
+      film.id
+    );
+
+    const userRating = await ctx.db.getProfileFilmRating(
+      ctx.currentAccountProfileId,
+      film.id
+    );
+
     return {
       ...film,
-      hasUserWatched: false,
-      userRating: null,
+      ageRating: ageRatingMap[film.ageRating],
+      hasUserWatched,
+      userRating,
       genres: [],
       castMembers: [],
     };
   },
-
   films: () => {},
   newFilms: () => {},
   popularFilms: () => {},

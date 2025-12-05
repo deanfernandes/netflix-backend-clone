@@ -5,6 +5,8 @@ import { AccountProfile } from "./models/AccountProfile.js";
 import { Film } from "./models/Film.js";
 import { AccountMembership } from "./models/AccountMembership.js";
 import { AccountMembershipPlan } from "./models/AccountMembershipPlan.js";
+import { Genre } from "./models/Genre.js";
+import { CastMember } from "./models/CastMember.js";
 
 export default class PgDbClient implements IDbClient {
   private pool: Pool;
@@ -195,5 +197,66 @@ export default class PgDbClient implements IDbClient {
       ageRating: row.age_rating,
       createdAt: row.created_at,
     };
+  }
+
+  async hasProfileWatchedFilm(
+    accountProfileId: string,
+    filmId: string
+  ): Promise<boolean> {
+    const res = await this.pool.query<{ dummy: number }>(
+      `
+    SELECT 1 AS dummy
+    FROM account_profile_film_views
+    WHERE account_profile_id = $1 AND film_id = $2
+    LIMIT 1
+    `,
+      [accountProfileId, filmId]
+    );
+
+    return (res!.rowCount ?? 0) > 0;
+  }
+
+  async getProfileFilmRating(
+    accountProfileId: string,
+    filmId: string
+  ): Promise<number | null> {
+    const res = await this.pool.query<{ rating: number }>(
+      `
+    SELECT rating
+    FROM account_profile_film_ratings
+    WHERE account_profile_id = $1 AND film_id = $2
+    LIMIT 1
+    `,
+      [accountProfileId, filmId]
+    );
+
+    return res.rows[0]?.rating ?? null;
+  }
+
+  async getFilmGenres(filmId: string): Promise<Genre[]> {
+    const res = await this.pool.query<Genre>(
+      `
+    SELECT g.id, g.name
+    FROM genres g
+    JOIN film_genres fg ON fg.genre_id = g.id
+    WHERE fg.film_id = $1
+    `,
+      [filmId]
+    );
+    return res.rows;
+  }
+
+  async getFilmCastMembers(filmId: string): Promise<CastMember[]> {
+    const res = await this.pool.query<CastMember>(
+      `
+    SELECT cm.id, cm.name
+    FROM cast_members cm
+    JOIN film_cast_members fcm ON fcm.cast_member_id = cm.id
+    WHERE fcm.film_id = $1
+  `,
+      [filmId]
+    );
+
+    return res.rows;
   }
 }
