@@ -85,9 +85,61 @@ export const Query = {
       castMembers: [],
     };
   },
-  films: () => {},
-  newFilms: () => {},
-  popularFilms: () => {},
+  films: async (
+    _parent: any,
+    args: {
+      genreIds?: string[] | null;
+      ageRating?: string | null;
+      search?: string | null;
+      limit?: number | null;
+      offset?: number | null;
+    },
+    ctx: { db: IDbClient; currentAccountProfileId: string }
+  ) => {
+    const films = await ctx.db.getFilms({
+      genreIds: args.genreIds ?? null,
+      ageRating: args.ageRating ?? null,
+      search: args.search ?? null,
+      limit: args.limit ?? null,
+      offset: args.offset ?? null,
+    });
+
+    return films.map((f) => ({
+      ...f,
+      hasUserWatched: null,
+      userRating: null,
+      genres: [],
+      castMembers: [],
+    }));
+  },
+  newFilms: async (
+    _parent: any,
+    args: { limit?: number | null },
+    ctx: { db: IDbClient }
+  ) => {
+    const films = await ctx.db.getNewFilms(args.limit ?? 10);
+    return films.map((f) => ({
+      ...f,
+      hasUserWatched: null,
+      userRating: null,
+      genres: [],
+      castMembers: [],
+    }));
+  },
+  popularFilms: async (
+    _parent: any,
+    args: { limit?: number | null },
+    ctx: { db: IDbClient }
+  ) => {
+    const films = await ctx.db.getPopularFilms(args.limit ?? 10);
+    return films.map((f) => ({
+      ...f,
+      hasUserWatched: null,
+      userRating: null,
+      genres: [],
+      castMembers: [],
+    }));
+  },
 
   series: () => {},
   seriesList: () => {},

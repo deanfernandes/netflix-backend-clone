@@ -259,4 +259,128 @@ export default class PgDbClient implements IDbClient {
 
     return res.rows;
   }
+
+  async getFilms(options: {
+    genreIds?: string[] | null;
+    ageRating?: string | null;
+    search?: string | null;
+    limit?: number | null;
+    offset?: number | null;
+  }): Promise<Film[]> {
+    const { genreIds, ageRating, search, limit, offset } = options;
+
+    const conditions: string[] = [];
+    const values: any[] = [];
+    let idx = 1;
+
+    if (genreIds && genreIds.length > 0) {
+      conditions.push(`
+      f.id IN (
+        SELECT fg.film_id
+        FROM film_genres fg
+        WHERE fg.genre_id = ANY($${idx})
+      )
+    `);
+      values.push(genreIds);
+      idx++;
+    }
+
+    if (ageRating) {
+      conditions.push(`f.age_rating = $${idx}`);
+      values.push(ageRating);
+      idx++;
+    }
+
+    if (search) {
+      conditions.push(`(f.title ILIKE $${idx} OR f.synopsis ILIKE $${idx})`);
+      values.push(`%${search}%`);
+      idx++;
+    }
+
+    let query = `
+    SELECT 
+      f.id,
+      f.title,
+      f.synopsis,
+      f.release_year AS "releaseYear",
+      f.age_rating AS "ageRating",
+      f.created_at AS "createdAt"
+    FROM films f
+  `;
+
+    if (conditions.length > 0) {
+      query += ` WHERE ` + conditions.join(" AND ");
+    }
+
+    query += ` ORDER BY f.created_at DESC`;
+
+    if (limit != null) {
+      query += ` LIMIT $${idx}`;
+      values.push(limit);
+      idx++;
+    }
+
+    if (offset != null) {
+      query += ` OFFSET $${idx}`;
+      values.push(offset);
+      idx++;
+    }
+
+    const res = await this.pool.query<Film>(query, values);
+    return res.rows;
+  }
+  async getNewFilms(limit?: number | null): Promise<Film[]> {
+    const values: any[] = [];
+    let idx = 1;
+
+    let query = `
+    SELECT 
+      id,
+      title,
+      synopsis,
+      release_year AS "releaseYear",
+      age_rating AS "ageRating",
+      created_at AS "createdAt"
+    FROM films
+    WHERE created_at >= now() - interval '1 month'
+    ORDER BY created_at DESC
+  `;
+
+    if (limit != null) {
+      query += ` LIMIT $${idx}`;
+      values.push(limit);
+      idx++;
+    }
+
+    const res = await this.pool.query<Film>(query, values);
+    return res.rows;
+  }
+  async getPopularFilms(limit?: number | null): Promise<Film[]> {
+    const values: any[] = [];
+    let idx = 1;
+
+    let query = `
+    SELECT 
+      f.id,
+      f.title,
+      f.synopsis,
+      f.release_year AS "releaseYear",
+      f.age_rating AS "ageRating",
+      f.created_at AS "createdAt",
+      COUNT(fv.id) AS view_count
+    FROM films f
+    LEFT JOIN film_views fv ON fv.film_id = f.id
+    GROUP BY f.id
+    ORDER BY view_count DESC, f.created_at DESC
+  `;
+
+    if (limit != null) {
+      query += ` LIMIT $${idx}`;
+      values.push(limit);
+      idx++;
+    }
+
+    const res = await this.pool.query<Film>(query, values);
+    return res.rows;
+  }
 }

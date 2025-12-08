@@ -33,4 +33,14 @@ export default interface IDbClient {
   ): Promise<number | null>;
   getFilmGenres(filmId: string): Promise<Genre[]>;
   getFilmCastMembers(filmId: string): Promise<CastMember[]>;
+
+  getFilms(options: {
+    genreIds?: string[] | null;
+    ageRating?: string | null;
+    search?: string | null;
+    limit?: number | null;
+    offset?: number | null;
+  }): Promise<Film[]>;
+  getNewFilms(limit?: number | null): Promise<Film[]>;
+  getPopularFilms(limit?: number | null): Promise<Film[]>;
 }
