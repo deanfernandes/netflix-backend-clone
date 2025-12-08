@@ -144,11 +144,11 @@ type Query {
     genreIds: [ID!]
     ageRating: ContentAgeRating
     search: String
-    limit: Int
-    offset: Int
+    limit: Int = 20
+    offset: Int = 0
   ): [Film!]!
-  newFilms(limit: Int, offset: Int): [Film!]!
-  popularFilms(limit: Int, offset: Int): [Film!]!
+  newFilms(limit: Int = 20, offset: Int = 0): [Film!]!
+  popularFilms(limit: Int = 20, offset: Int = 0): [Film!]!
 
   series(id: ID!): Series
   seriesList(

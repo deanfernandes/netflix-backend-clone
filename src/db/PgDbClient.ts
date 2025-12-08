@@ -267,7 +267,7 @@ export default class PgDbClient implements IDbClient {
     limit?: number | null;
     offset?: number | null;
   }): Promise<Film[]> {
-    const { genreIds, ageRating, search, limit, offset } = options;
+    const { genreIds, ageRating, search, limit = 20, offset = 0 } = options;
 
     const conditions: string[] = [];
     const values: any[] = [];
@@ -312,28 +312,15 @@ export default class PgDbClient implements IDbClient {
       query += ` WHERE ` + conditions.join(" AND ");
     }
 
-    query += ` ORDER BY f.created_at DESC`;
-
-    if (limit != null) {
-      query += ` LIMIT $${idx}`;
-      values.push(limit);
-      idx++;
-    }
-
-    if (offset != null) {
-      query += ` OFFSET $${idx}`;
-      values.push(offset);
-      idx++;
-    }
+    query += ` ORDER BY f.created_at DESC LIMIT $${idx} OFFSET $${idx + 1}`;
+    values.push(limit, offset);
 
     const res = await this.pool.query<Film>(query, values);
     return res.rows;
   }
-  async getNewFilms(limit?: number | null): Promise<Film[]> {
-    const values: any[] = [];
-    let idx = 1;
 
-    let query = `
+  async getNewFilms(limit: number = 20): Promise<Film[]> {
+    const query = `
     SELECT 
       id,
       title,
@@ -344,22 +331,14 @@ export default class PgDbClient implements IDbClient {
     FROM films
     WHERE created_at >= now() - interval '1 month'
     ORDER BY created_at DESC
+    LIMIT $1
   `;
-
-    if (limit != null) {
-      query += ` LIMIT $${idx}`;
-      values.push(limit);
-      idx++;
-    }
-
-    const res = await this.pool.query<Film>(query, values);
+    const res = await this.pool.query<Film>(query, [limit]);
     return res.rows;
   }
-  async getPopularFilms(limit?: number | null): Promise<Film[]> {
-    const values: any[] = [];
-    let idx = 1;
 
-    let query = `
+  async getPopularFilms(limit: number = 20): Promise<Film[]> {
+    const query = `
     SELECT 
       f.id,
       f.title,
@@ -372,15 +351,9 @@ export default class PgDbClient implements IDbClient {
     LEFT JOIN film_views fv ON fv.film_id = f.id
     GROUP BY f.id
     ORDER BY view_count DESC, f.created_at DESC
+    LIMIT $1
   `;
-
-    if (limit != null) {
-      query += ` LIMIT $${idx}`;
-      values.push(limit);
-      idx++;
-    }
-
-    const res = await this.pool.query<Film>(query, values);
+    const res = await this.pool.query<Film>(query, [limit]);
     return res.rows;
   }
 }

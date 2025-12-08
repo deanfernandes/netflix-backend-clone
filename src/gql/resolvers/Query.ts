@@ -85,6 +85,7 @@ export const Query = {
       castMembers: [],
     };
   },
+
   films: async (
     _parent: any,
     args: {
@@ -100,40 +101,45 @@ export const Query = {
       genreIds: args.genreIds ?? null,
       ageRating: args.ageRating ?? null,
       search: args.search ?? null,
-      limit: args.limit ?? null,
-      offset: args.offset ?? null,
+      limit: args.limit ?? 20,
+      offset: args.offset ?? 0,
     });
 
     return films.map((f) => ({
       ...f,
+      ageRating: ageRatingMap[f.ageRating],
       hasUserWatched: null,
       userRating: null,
       genres: [],
       castMembers: [],
     }));
   },
+
   newFilms: async (
     _parent: any,
-    args: { limit?: number | null },
+    args: { limit?: number | null; offset?: number | null },
     ctx: { db: IDbClient }
   ) => {
-    const films = await ctx.db.getNewFilms(args.limit ?? 10);
+    const films = await ctx.db.getNewFilms(args.limit ?? 20);
     return films.map((f) => ({
       ...f,
+      ageRating: ageRatingMap[f.ageRating],
       hasUserWatched: null,
       userRating: null,
       genres: [],
       castMembers: [],
     }));
   },
+
   popularFilms: async (
     _parent: any,
-    args: { limit?: number | null },
+    args: { limit?: number | null; offset?: number | null },
     ctx: { db: IDbClient }
   ) => {
-    const films = await ctx.db.getPopularFilms(args.limit ?? 10);
+    const films = await ctx.db.getPopularFilms(args.limit ?? 20);
     return films.map((f) => ({
       ...f,
+      ageRating: ageRatingMap[f.ageRating],
       hasUserWatched: null,
       userRating: null,
       genres: [],
