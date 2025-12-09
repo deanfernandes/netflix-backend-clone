@@ -70,17 +70,21 @@ export default class PgDbClient implements IDbClient {
     accountId: string
   ): Promise<AccountProfile[]> {
     const res = await this.pool.query(
-      `SELECT * FROM account_profiles WHERE account_id = $1`,
+      `
+    SELECT 
+      id,
+      account_id AS "accountId",
+      name,
+      profile_image_url AS "profileImageUrl",
+      pin_hash AS "pinHash"
+    FROM account_profiles
+    WHERE account_id = $1
+    ORDER BY id ASC
+    `,
       [accountId]
     );
 
-    return res.rows.map((row) => ({
-      id: row.id,
-      name: row.name,
-      profileImageUrl: row.profile_image_url ?? null,
-      pinHash: row.pin_hash ?? null,
-      accountId: row.account_id,
-    }));
+    return res.rows;
   }
 
   async getAccountMembershipById(

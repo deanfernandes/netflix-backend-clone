@@ -1,4 +1,5 @@
 import IDbClient from "../../db/IDbClient.js";
+import { Account } from "../../db/models/Account.js";
 import { ContentAgeRating } from "../../db/models/Content.js";
 
 const ageRatingMap: Record<ContentAgeRating, string> = {
@@ -11,11 +12,11 @@ const ageRatingMap: Record<ContentAgeRating, string> = {
 
 export const Query = {
   account: async (
-    _parent: any,
-    { id }: { id: string },
+    _parent: unknown,
+    args: { id: string },
     ctx: { db: IDbClient }
   ) => {
-    return await ctx.db.getAccountById(id);
+    return await ctx.db.getAccountById(args.id);
   },
 
   accounts: async (
