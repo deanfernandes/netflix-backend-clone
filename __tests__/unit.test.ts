@@ -56,9 +56,9 @@ afterAll(async () => {
 });
 
 describe("query", () => {
-  test.only("account all fields", async () => {
+  test("account all fields", async () => {
     const query = `
-    query {
+    query ($accountId: ID!) {
       account(id: $accountId) {
         createdAt
         email
@@ -111,5 +111,9 @@ describe("query", () => {
     expect(data).toBeDefined();
     expect(data.accounts).toHaveLength(mockAccounts.length);
     expect(data.accounts[0].email).toBe(mockAccounts[0].email);
+  });
+
+  describe("account field resolvers", () => {
+    test.only("profiles all fields", async () => {});
   });
 });
