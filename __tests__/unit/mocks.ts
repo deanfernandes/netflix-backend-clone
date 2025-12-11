@@ -1,0 +1,85 @@
+export const mockAccount = {
+  id: "1",
+  email: "user1@example.com",
+  passwordHash: "hashedpassword",
+  mobileNumber: "5550000001",
+  createdAt: new Date().toISOString(),
+};
+
+export const mockAccounts = [
+  mockAccount,
+  {
+    id: "2",
+    email: "user2@example.com",
+    passwordHash: "hash2",
+    mobileNumber: "5550000002",
+    createdAt: new Date().toISOString(),
+  },
+];
+
+export const mockProfiles = [
+  {
+    id: "1",
+    accountId: "1",
+    name: "Profile 1",
+    profileImageUrl: "https://example.com/profile1.png",
+    hasPin: false,
+  },
+  {
+    id: "2",
+    accountId: "1",
+    name: "Profile 2",
+    profileImageUrl: "https://example.com/profile2.png",
+    hasPin: true,
+  },
+  {
+    id: "3",
+    accountId: "2",
+    name: "Other Account Profile",
+    profileImageUrl: "https://example.com/profile3.png",
+    hasPin: false,
+  },
+];
+
+export const mockMemberships = [
+  {
+    id: "1",
+    accountId: "1",
+    accountMembershipPlanId: "101",
+    accountMembershipPrice: 9.99,
+    startDate: "2025-01-01T00:00:00.000Z",
+    endDate: "2025-12-31T23:59:59.999Z",
+    status: "ACTIVE",
+    autoRenew: true,
+  },
+  {
+    id: "2",
+    accountId: "1",
+    accountMembershipPlanId: "102",
+    accountMembershipPrice: 19.99,
+    startDate: "2025-01-01T00:00:00.000Z",
+    endDate: "2025-12-31T23:59:59.999Z",
+    status: "EXPIRED",
+    autoRenew: false,
+  },
+];
+
+export const dbMocks = {
+  getAccounts: async (limit?: number, offset?: number) => {
+    const start = offset ?? 0;
+    const end = limit != null ? start + limit : mockAccounts.length;
+    return mockAccounts.slice(start, end);
+  },
+
+  getAccountById: async (id: string) =>
+    mockAccounts.find((acc) => acc.id === id) ?? null,
+
+  getAccountProfilesByAccountId: async (accountId: string) =>
+    mockProfiles.filter((p) => p.accountId === accountId),
+
+  getAccountMembershipsByAccountId: async (accountId: string) =>
+    mockMemberships.filter((m) => m.accountId === accountId),
+
+  getAccountProfileById: async (id: string) =>
+    mockProfiles.find((p) => p.id === id) ?? null,
+};
