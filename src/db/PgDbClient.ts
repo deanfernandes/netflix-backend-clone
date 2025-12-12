@@ -591,4 +591,11 @@ export default class PgDbClient implements IDbClient {
       seasonId: row.season_id.toString(),
     };
   }
+
+  public async query(sql: string, params?: any[]) {
+    return this.pool.query(sql, params);
+  }
+  public async close() {
+    await this.pool.end();
+  }
 }
