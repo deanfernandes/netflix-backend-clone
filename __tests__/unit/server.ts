@@ -14,6 +14,7 @@ export const startTestServer = async () => {
       db: dbMocks,
       currentAccountProfileId: "1",
     }),
+    listen: { port: 0 },
   });
 
   url = res.url;
