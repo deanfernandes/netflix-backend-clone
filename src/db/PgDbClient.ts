@@ -96,19 +96,19 @@ export default class PgDbClient implements IDbClient {
   ): Promise<AccountMembership | null> {
     const res = await this.pool.query(
       `
-      SELECT
-        id,
-        start_date,
-        end_date,
-        status,
-        auto_renew,
-        account_id,
-        account_membership_plan_id,
-        account_membership_price
-      FROM account_memberships
-      WHERE id = $1
-      LIMIT 1
-      `,
+    SELECT
+      id,
+      start_date,
+      end_date,
+      status,
+      auto_renew,
+      account_id,
+      account_membership_plan_id,
+      account_membership_price
+    FROM account_memberships
+    WHERE id = $1
+    LIMIT 1
+    `,
       [id]
     );
 
@@ -119,7 +119,7 @@ export default class PgDbClient implements IDbClient {
       id: row.id,
       startDate: row.start_date,
       endDate: row.end_date,
-      status: row.status.toUpperCase(),
+      status: row.status,
       autoRenew: row.auto_renew,
       accountId: row.account_id,
       accountMembershipPlanId: row.account_membership_plan_id,

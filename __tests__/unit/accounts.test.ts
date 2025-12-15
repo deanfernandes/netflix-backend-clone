@@ -1,5 +1,5 @@
 import { startTestServer, stopTestServer } from "./server";
-import { mockAccounts, mockMemberships, mockProfiles } from "./mocks";
+import { mockAccounts, mockAccountMemberships, mockProfiles } from "./mocks";
 
 let baseUrl: string;
 
@@ -126,7 +126,7 @@ describe("Accounts Query", () => {
         expect(account.memberships).toBeDefined();
         expect(Array.isArray(account.memberships)).toBe(true);
 
-        const accountMemberships = mockMemberships.filter(
+        const accountMemberships = mockAccountMemberships.filter(
           (m) => m.accountId === account.id
         );
 
@@ -139,7 +139,9 @@ describe("Accounts Query", () => {
           expect(correspondingMembership).not.toBeUndefined();
           if (correspondingMembership) {
             expect(membership.id).toBe(correspondingMembership.id);
-            expect(membership.status).toBe(correspondingMembership.status);
+            expect(membership.status.toUpperCase()).toBe(
+              correspondingMembership.status.toUpperCase()
+            );
             expect(membership.accountMembershipPrice).toBe(
               correspondingMembership.accountMembershipPrice
             );

@@ -45,7 +45,9 @@ export const Query = {
     { id }: { id: string },
     ctx: { db: IDbClient }
   ) => {
-    return await ctx.db.getAccountMembershipById(id);
+    const membership = await ctx.db.getAccountMembershipById(id);
+    if (!membership) return null;
+    return { ...membership, status: membership.status.toUpperCase() };
   },
 
   accountMemberships: async (

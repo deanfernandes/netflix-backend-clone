@@ -41,26 +41,39 @@ export const mockProfiles = [
   },
 ];
 
-export const mockMemberships = [
+export const mockAccountMemberships = [
   {
     id: "1",
     accountId: "1",
-    accountMembershipPlanId: "101",
+    accountMembershipPlanId: 101,
     accountMembershipPrice: 9.99,
     startDate: "2025-01-01T00:00:00.000Z",
     endDate: "2025-12-31T23:59:59.999Z",
-    status: "ACTIVE",
+    status: "active",
     autoRenew: true,
   },
   {
     id: "2",
     accountId: "1",
-    accountMembershipPlanId: "102",
+    accountMembershipPlanId: 102,
     accountMembershipPrice: 19.99,
     startDate: "2025-01-01T00:00:00.000Z",
     endDate: "2025-12-31T23:59:59.999Z",
-    status: "EXPIRED",
+    status: "expired",
     autoRenew: false,
+  },
+];
+
+export const mockAccountMembershipPlans = [
+  {
+    id: 101,
+    name: "Standard",
+    monthlyPrice: 9.99,
+  },
+  {
+    id: 102,
+    name: "Premium",
+    monthlyPrice: 19.99,
   },
 ];
 
@@ -78,8 +91,14 @@ export const dbMocks = {
     mockProfiles.filter((p) => p.accountId === accountId),
 
   getAccountMembershipsByAccountId: async (accountId: string) =>
-    mockMemberships.filter((m) => m.accountId === accountId),
+    mockAccountMemberships.filter((m) => m.accountId === accountId),
 
   getAccountProfileById: async (id: string) =>
     mockProfiles.find((p) => p.id === id) ?? null,
+
+  getAccountMembershipById: async (id: string) =>
+    mockAccountMemberships.find((m) => m.id === id) ?? null,
+
+  getAccountMembershipPlanById: async (id: string) =>
+    mockAccountMembershipPlans.find((p) => p.id === id) ?? null,
 };

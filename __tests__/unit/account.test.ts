@@ -1,5 +1,5 @@
 import { startTestServer, stopTestServer } from "./server";
-import { mockAccounts, mockMemberships } from "./mocks";
+import { mockAccounts, mockAccountMemberships } from "./mocks";
 
 let url: string;
 
@@ -104,7 +104,9 @@ describe("query", () => {
       expect(data).toBeDefined();
       expect(data.account).toBeDefined();
       expect(Array.isArray(data.account.memberships)).toBe(true);
-      expect(data.account.memberships.length).toBe(mockMemberships.length);
+      expect(data.account.memberships.length).toBe(
+        mockAccountMemberships.length
+      );
       expect(data.account.memberships[0].status).toBe("ACTIVE");
     });
   });

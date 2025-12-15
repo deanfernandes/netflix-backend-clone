@@ -1,11 +1,10 @@
 import { startTestServer, stopTestServer } from "./server";
 import { mockProfiles } from "./mocks";
 
-let baseUrl: string;
+let url: string;
 
 beforeAll(async () => {
-  const res = await startTestServer();
-  baseUrl = res.url;
+  ({ url } = await startTestServer());
 });
 
 afterAll(async () => {
@@ -27,7 +26,7 @@ describe("Account Profile Query", () => {
 
     const variables = { accountProfileId: "1" };
 
-    const response = await fetch(baseUrl, {
+    const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query, variables }),
