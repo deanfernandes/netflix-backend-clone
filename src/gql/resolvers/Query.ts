@@ -3,6 +3,7 @@ import { mapContentAgeRating, mapContentRating } from "../../utils/enumMaps.js";
 import {
   ContentAgeRating,
   ContentRating,
+  Season,
   Series,
 } from "../generated/graphql.js";
 
@@ -241,7 +242,26 @@ export const Query = {
       castMembers: [],
     }));
   },
-  season: () => {},
+  season: async (
+    _parent: unknown,
+    args: { id: string },
+    ctx: { db: IDbClient }
+  ): Promise<Season | null> => {
+    const season = await ctx.db.getSeasonById(args.id);
+    if (!season) return null;
+
+    return {
+      __typename: "Season",
+      id: season.id,
+      number: season.number,
+      ageRating: mapContentAgeRating(season.ageRating) as ContentAgeRating,
+      releaseYear: season.releaseYear,
+      episodes: [],
+      series: {} as Series, // placeholder; will be replaced by field resolver
+      _seriesId: season.seriesId,
+    } as Season & { _seriesId: string };
+  },
+
   seasons: () => {},
   episode: () => {},
   episodes: () => {},

@@ -10,6 +10,7 @@ import { CastMember } from "./models/CastMember.js";
 import { Series } from "./models/Series.js";
 import { ContentAgeRating, ContentRating } from "./models/Content.js";
 import { Season } from "./models/Season.js";
+import { Episode } from "./models/Episode.js";
 
 export default class PgDbClient implements IDbClient {
   private pool: Pool;
@@ -522,6 +523,43 @@ export default class PgDbClient implements IDbClient {
       releaseYear: row.release_year,
       ageRating: row.age_rating,
       createdAt: row.created_at,
+    }));
+  }
+  async getSeasonById(id: string): Promise<Season | null> {
+    const res = await this.pool.query(
+      `SELECT id, number, age_rating, release_year, series_id
+     FROM seasons
+     WHERE id = $1`,
+      [id]
+    );
+
+    const row = res.rows[0];
+    if (!row) return null;
+
+    return {
+      id: row.id,
+      number: row.number,
+      ageRating: row.age_rating,
+      releaseYear: row.release_year,
+      seriesId: row.series_id,
+    };
+  }
+  async getEpisodesBySeasonId(seasonId: string): Promise<Episode[]> {
+    const res = await this.pool.query(
+      `SELECT id, title, synopsis, duration_minutes, number, season_id
+     FROM episodes
+     WHERE season_id = $1
+     ORDER BY number ASC`,
+      [seasonId]
+    );
+
+    return res.rows.map((row) => ({
+      id: row.id,
+      title: row.title,
+      synopsis: row.synopsis,
+      durationMinutes: row.duration_minutes,
+      number: row.number,
+      seasonId: row.season_id,
     }));
   }
 }

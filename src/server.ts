@@ -9,6 +9,7 @@ import { AccountProfile } from "./gql/resolvers/AccountProfile.js";
 import { AccountMembership } from "./gql/resolvers/index.js";
 import { FilmResolver } from "./gql/resolvers/Film.js";
 import { SeriesResolver } from "./gql/resolvers/index.js";
+import { SeasonResolver } from "./gql/resolvers/index.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,6 +26,7 @@ export function createApolloServer() {
     AccountMembership,
     Film: FilmResolver,
     Series: SeriesResolver,
+    Season: SeasonResolver,
   };
 
   const server = new ApolloServer({ typeDefs, resolvers });

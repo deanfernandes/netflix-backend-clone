@@ -8,6 +8,7 @@ import { CastMember } from "./models/CastMember.js";
 import { Series } from "./models/Series.js";
 import { Season } from "./models/Season.js";
 import { ContentRating } from "./models/Content.js";
+import { Episode } from "./models/Episode.js";
 
 export default interface IDbClient {
   getAccountById(id: string): Promise<Account | null>;
@@ -57,4 +58,6 @@ export default interface IDbClient {
   getSeriesList(limit?: number, offset?: number): Promise<Series[]>;
   getNewSeries(limit?: number, offset?: number): Promise<Series[]>;
   getPopularSeries(limit?: number, offset?: number): Promise<Series[]>;
+  getSeasonById(id: string): Promise<Season | null>;
+  getEpisodesBySeasonId(seasonId: string): Promise<Episode[]>;
 }
