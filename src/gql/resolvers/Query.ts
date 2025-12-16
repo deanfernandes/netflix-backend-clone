@@ -55,7 +55,13 @@ export const Query = {
     { accountId }: { accountId: string },
     ctx: { db: IDbClient }
   ) => {
-    return await ctx.db.getAccountMembershipsByAccountId(accountId);
+    const memberships = await ctx.db.getAccountMembershipsByAccountId(
+      accountId
+    );
+    return memberships.map((m) => ({
+      ...m,
+      status: m.status.toUpperCase(),
+    }));
   },
 
   film: async (
