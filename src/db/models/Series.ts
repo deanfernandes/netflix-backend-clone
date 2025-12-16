@@ -1,4 +1,7 @@
-import { ContentAgeRating } from "./Content.js";
+import { CastMember } from "./CastMember.js";
+import { ContentAgeRating, ContentRating } from "./Content.js";
+import { Genre } from "./Genre.js";
+import { Season } from "./Season.js";
 
 export interface Series {
   id: string;
@@ -7,6 +10,11 @@ export interface Series {
   releaseYear: number;
   ageRating: ContentAgeRating;
   createdAt: Date;
+  hasUserWatched?: boolean | null;
+  userRating?: ContentRating | null;
+  seasons?: Season[];
+  genres?: Genre[];
+  castMembers?: CastMember[];
 }
 
 export interface SeriesView {

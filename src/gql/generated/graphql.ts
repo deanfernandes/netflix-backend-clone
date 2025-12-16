@@ -92,7 +92,7 @@ export type Film = {
   castMembers: Array<CastMember>;
   createdAt: Scalars['String']['output'];
   genres: Array<Genre>;
-  hasUserWatched: Scalars['Boolean']['output'];
+  hasUserWatched?: Maybe<Scalars['Boolean']['output']>;
   id: Scalars['ID']['output'];
   releaseYear: Scalars['Int']['output'];
   synopsis: Scalars['String']['output'];
@@ -408,7 +408,7 @@ export type Series = {
   castMembers: Array<CastMember>;
   createdAt: Scalars['String']['output'];
   genres: Array<Genre>;
-  hasUserWatched: Scalars['Boolean']['output'];
+  hasUserWatched?: Maybe<Scalars['Boolean']['output']>;
   id: Scalars['ID']['output'];
   releaseYear: Scalars['Int']['output'];
   seasons: Array<Season>;
@@ -610,7 +610,7 @@ export type FilmResolvers<ContextType = any, ParentType extends ResolversParentT
   castMembers?: Resolver<Array<ResolversTypes['CastMember']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   genres?: Resolver<Array<ResolversTypes['Genre']>, ParentType, ContextType>;
-  hasUserWatched?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  hasUserWatched?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   releaseYear?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   synopsis?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -656,10 +656,10 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   episode?: Resolver<Maybe<ResolversTypes['Episode']>, ParentType, ContextType, RequireFields<QueryEpisodeArgs, 'id'>>;
   episodes?: Resolver<Array<ResolversTypes['Episode']>, ParentType, ContextType, RequireFields<QueryEpisodesArgs, 'seasonId'>>;
   film?: Resolver<Maybe<ResolversTypes['Film']>, ParentType, ContextType, RequireFields<QueryFilmArgs, 'id'>>;
-  films?: Resolver<Array<ResolversTypes['Film']>, ParentType, ContextType, Partial<QueryFilmsArgs>>;
-  newFilms?: Resolver<Array<ResolversTypes['Film']>, ParentType, ContextType, Partial<QueryNewFilmsArgs>>;
+  films?: Resolver<Array<ResolversTypes['Film']>, ParentType, ContextType, RequireFields<QueryFilmsArgs, 'limit' | 'offset'>>;
+  newFilms?: Resolver<Array<ResolversTypes['Film']>, ParentType, ContextType, RequireFields<QueryNewFilmsArgs, 'limit' | 'offset'>>;
   newSeries?: Resolver<Array<ResolversTypes['Series']>, ParentType, ContextType, Partial<QueryNewSeriesArgs>>;
-  popularFilms?: Resolver<Array<ResolversTypes['Film']>, ParentType, ContextType, Partial<QueryPopularFilmsArgs>>;
+  popularFilms?: Resolver<Array<ResolversTypes['Film']>, ParentType, ContextType, RequireFields<QueryPopularFilmsArgs, 'limit' | 'offset'>>;
   popularSeries?: Resolver<Array<ResolversTypes['Series']>, ParentType, ContextType, Partial<QueryPopularSeriesArgs>>;
   season?: Resolver<Maybe<ResolversTypes['Season']>, ParentType, ContextType, RequireFields<QuerySeasonArgs, 'id'>>;
   seasons?: Resolver<Array<ResolversTypes['Season']>, ParentType, ContextType, RequireFields<QuerySeasonsArgs, 'seriesId'>>;
@@ -682,7 +682,7 @@ export type SeriesResolvers<ContextType = any, ParentType extends ResolversParen
   castMembers?: Resolver<Array<ResolversTypes['CastMember']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   genres?: Resolver<Array<ResolversTypes['Genre']>, ParentType, ContextType>;
-  hasUserWatched?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  hasUserWatched?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   releaseYear?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   seasons?: Resolver<Array<ResolversTypes['Season']>, ParentType, ContextType>;

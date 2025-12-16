@@ -7,6 +7,9 @@ import { AccountMembership } from "./models/AccountMembership.js";
 import { AccountMembershipPlan } from "./models/AccountMembershipPlan.js";
 import { Genre } from "./models/Genre.js";
 import { CastMember } from "./models/CastMember.js";
+import { Series } from "./models/Series.js";
+import { ContentAgeRating, ContentRating } from "./models/Content.js";
+import { Season } from "./models/Season.js";
 
 export default class PgDbClient implements IDbClient {
   private pool: Pool;
@@ -359,5 +362,166 @@ export default class PgDbClient implements IDbClient {
   `;
     const res = await this.pool.query<Film>(query, [limit]);
     return res.rows;
+  }
+
+  async getSeriesById(id: string): Promise<Series | null> {
+    const res = await this.pool.query(
+      `SELECT id, title, synopsis, release_year, age_rating, created_at
+     FROM series
+     WHERE id = $1`,
+      [id]
+    );
+
+    const row = res.rows[0];
+    if (!row) return null;
+
+    return {
+      id: row.id,
+      title: row.title,
+      synopsis: row.synopsis,
+      releaseYear: row.release_year,
+      ageRating: row.age_rating,
+      createdAt: row.created_at,
+    };
+  }
+
+  async hasUserWatchedSeries(
+    seriesId: string,
+    accountProfileId: string
+  ): Promise<boolean> {
+    const res = await this.pool.query(
+      `SELECT 1 FROM account_profile_series_views
+     WHERE series_id = $1 AND account_profile_id = $2`,
+      [seriesId, accountProfileId]
+    );
+
+    return (res.rowCount ?? 0) > 0;
+  }
+
+  async getUserSeriesRating(
+    seriesId: string,
+    accountProfileId: string
+  ): Promise<ContentRating | null> {
+    const res = await this.pool.query(
+      `SELECT rating FROM account_profile_series_ratings
+     WHERE series_id = $1 AND account_profile_id = $2`,
+      [seriesId, accountProfileId]
+    );
+
+    return res.rows[0]?.rating ?? null;
+  }
+
+  async getSeasonsBySeriesId(seriesId: string): Promise<Season[]> {
+    const res = await this.pool.query(
+      `SELECT id, number, age_rating, release_year, series_id
+     FROM seasons
+     WHERE series_id = $1
+     ORDER BY number ASC`,
+      [seriesId]
+    );
+
+    return res.rows.map((row) => ({
+      id: row.id,
+      number: row.number,
+      ageRating: row.age_rating,
+      releaseYear: row.release_year,
+      seriesId: row.series_id,
+    }));
+  }
+  async getGenresBySeriesId(seriesId: string): Promise<Genre[]> {
+    const res = await this.pool.query(
+      `SELECT g.id, g.name
+     FROM genres g
+     JOIN series_genres sg ON sg.genre_id = g.id
+     WHERE sg.series_id = $1
+     ORDER BY g.name ASC`,
+      [seriesId]
+    );
+
+    return res.rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+    }));
+  }
+  async getCastMembersBySeriesId(seriesId: string): Promise<CastMember[]> {
+    const res = await this.pool.query(
+      `SELECT cm.id, cm.name
+     FROM cast_members cm
+     JOIN series_cast_members scm ON scm.cast_member_id = cm.id
+     WHERE scm.series_id = $1
+     ORDER BY cm.name ASC`,
+      [seriesId]
+    );
+
+    return res.rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+    }));
+  }
+  async getSeriesList(
+    limit: number = 50,
+    offset: number = 0
+  ): Promise<Series[]> {
+    const res = await this.pool.query(
+      `SELECT id, title, synopsis, release_year, age_rating, created_at
+     FROM series
+     ORDER BY created_at DESC
+     LIMIT $1 OFFSET $2`,
+      [limit, offset]
+    );
+
+    return res.rows.map((row) => ({
+      id: row.id,
+      title: row.title,
+      synopsis: row.synopsis,
+      releaseYear: row.release_year,
+      ageRating: row.age_rating,
+      createdAt: row.created_at,
+    }));
+  }
+  async getNewSeries(
+    limit: number = 50,
+    offset: number = 0
+  ): Promise<Series[]> {
+    const res = await this.pool.query(
+      `SELECT id, title, synopsis, release_year, age_rating, created_at
+     FROM series
+     ORDER BY created_at DESC
+     LIMIT $1 OFFSET $2`,
+      [limit, offset]
+    );
+
+    return res.rows.map((row) => ({
+      id: row.id,
+      title: row.title,
+      synopsis: row.synopsis,
+      releaseYear: row.release_year,
+      ageRating: row.age_rating,
+      createdAt: row.created_at,
+    }));
+  }
+  async getPopularSeries(
+    limit: number = 50,
+    offset: number = 0
+  ): Promise<Series[]> {
+    const res = await this.pool.query(
+      `SELECT s.id, s.title, s.synopsis, s.release_year, s.age_rating, s.created_at,
+            COUNT(v.id) AS view_count
+     FROM series s
+     LEFT JOIN account_profile_series_views v ON v.series_id = s.id
+     GROUP BY s.id
+     ORDER BY view_count DESC
+     LIMIT $1 OFFSET $2`,
+      [limit, offset]
+    );
+
+    return res.rows.map((row) => ({
+      id: row.id,
+      title: row.title,
+      synopsis: row.synopsis,
+      releaseYear: row.release_year,
+      ageRating: row.age_rating,
+      createdAt: row.created_at,
+    }));
   }
 }

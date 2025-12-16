@@ -5,14 +5,15 @@ import { AccountMembershipPlan } from "./models/AccountMembershipPlan.js";
 import { Film } from "./models/Film.js";
 import { Genre } from "./models/Genre.js";
 import { CastMember } from "./models/CastMember.js";
+import { Series } from "./models/Series.js";
+import { Season } from "./models/Season.js";
+import { ContentRating } from "./models/Content.js";
 
 export default interface IDbClient {
   getAccountById(id: string): Promise<Account | null>;
   getAccounts(limit?: number, offset?: number): Promise<Account[]>;
-
   getAccountProfileById(id: string): Promise<AccountProfile | null>;
   getAccountProfilesByAccountId(accountId: string): Promise<AccountProfile[]>;
-
   getAccountMembershipById(id: string): Promise<AccountMembership | null>;
   getAccountMembershipsByAccountId(
     accountId: string
@@ -26,14 +27,12 @@ export default interface IDbClient {
     accountProfileId: string,
     filmId: string
   ): Promise<boolean>;
-
   getProfileFilmRating(
     accountProfileId: string,
     filmId: string
   ): Promise<number | null>;
   getFilmGenres(filmId: string): Promise<Genre[]>;
   getFilmCastMembers(filmId: string): Promise<CastMember[]>;
-
   getFilms(options: {
     genreIds?: string[] | null;
     ageRating?: string | null;
@@ -43,4 +42,19 @@ export default interface IDbClient {
   }): Promise<Film[]>;
   getNewFilms(limit?: number | null): Promise<Film[]>;
   getPopularFilms(limit?: number | null): Promise<Film[]>;
+  getSeriesById(id: string): Promise<Series | null>;
+  hasUserWatchedSeries(
+    seriesId: string,
+    accountProfileId: string
+  ): Promise<boolean>;
+  getUserSeriesRating(
+    seriesId: string,
+    accountProfileId: string
+  ): Promise<ContentRating | null>;
+  getSeasonsBySeriesId(seriesId: string): Promise<Season[]>;
+  getGenresBySeriesId(seriesId: string): Promise<Genre[]>;
+  getCastMembersBySeriesId(seriesId: string): Promise<CastMember[]>;
+  getSeriesList(limit?: number, offset?: number): Promise<Series[]>;
+  getNewSeries(limit?: number, offset?: number): Promise<Series[]>;
+  getPopularSeries(limit?: number, offset?: number): Promise<Series[]>;
 }

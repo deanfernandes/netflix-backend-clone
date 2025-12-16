@@ -1,14 +1,10 @@
 import IDbClient from "../../db/IDbClient.js";
-import { Account } from "../../db/models/Account.js";
-import { ContentAgeRating } from "../../db/models/Content.js";
-
-const ageRatingMap: Record<ContentAgeRating, string> = {
-  U: "U",
-  PG: "PG",
-  "12": "_12",
-  "15": "_15",
-  "18": "_18",
-};
+import { mapContentAgeRating, mapContentRating } from "../../utils/enumMaps.js";
+import {
+  ContentAgeRating,
+  ContentRating,
+  Series,
+} from "../generated/graphql.js";
 
 export const Query = {
   account: async (
@@ -79,7 +75,7 @@ export const Query = {
 
     return {
       ...film,
-      ageRating: ageRatingMap[film.ageRating],
+      ageRating: mapContentAgeRating(film.ageRating) as ContentAgeRating,
       hasUserWatched,
       userRating,
       genres: [],
@@ -108,7 +104,7 @@ export const Query = {
 
     return films.map((f) => ({
       ...f,
-      ageRating: ageRatingMap[f.ageRating],
+      ageRating: mapContentAgeRating(f.ageRating) as ContentAgeRating,
       hasUserWatched: null,
       userRating: null,
       genres: [],
@@ -124,7 +120,7 @@ export const Query = {
     const films = await ctx.db.getNewFilms(args.limit ?? 20);
     return films.map((f) => ({
       ...f,
-      ageRating: ageRatingMap[f.ageRating],
+      ageRating: mapContentAgeRating(f.ageRating) as ContentAgeRating,
       hasUserWatched: null,
       userRating: null,
       genres: [],
@@ -140,22 +136,113 @@ export const Query = {
     const films = await ctx.db.getPopularFilms(args.limit ?? 20);
     return films.map((f) => ({
       ...f,
-      ageRating: ageRatingMap[f.ageRating],
+      ageRating: mapContentAgeRating(f.ageRating) as ContentAgeRating,
       hasUserWatched: null,
       userRating: null,
       genres: [],
       castMembers: [],
     }));
   },
+  series: async (
+    _parent: unknown,
+    args: { id: string },
+    ctx: { db: IDbClient; currentAccountProfileId?: string }
+  ) => {
+    const series = await ctx.db.getSeriesById(args.id);
+    if (!series) return null;
 
-  series: () => {},
-  seriesList: () => {},
-  newSeries: () => {},
-  popularSeries: () => {},
+    let hasUserWatched: boolean | undefined = undefined;
+    let userRating: ContentRating | null = null;
 
+    if (ctx.currentAccountProfileId) {
+      hasUserWatched = await ctx.db.hasUserWatchedSeries(
+        series.id,
+        ctx.currentAccountProfileId
+      );
+      const dbRating = await ctx.db.getUserSeriesRating(
+        series.id,
+        ctx.currentAccountProfileId
+      );
+      if (dbRating) userRating = mapContentRating(dbRating);
+    }
+
+    return {
+      ...series,
+      ageRating: mapContentAgeRating(series.ageRating),
+      hasUserWatched,
+      userRating,
+      seasons: [],
+      genres: [],
+      castMembers: [],
+    };
+  },
+  seriesList: async (
+    _parent: unknown,
+    args: { limit?: number; offset?: number },
+    ctx: { db: IDbClient }
+  ): Promise<Series[]> => {
+    const limit = args.limit ?? 50;
+    const offset = args.offset ?? 0;
+
+    const seriesList = await ctx.db.getSeriesList(limit, offset);
+
+    return seriesList.map((series) => ({
+      ...series,
+      ageRating: mapContentAgeRating(series.ageRating) as ContentAgeRating,
+      createdAt: series.createdAt.toISOString(),
+      hasUserWatched: null,
+      userRating: series.userRating
+        ? mapContentRating(series.userRating)
+        : null,
+      seasons: [],
+      genres: [],
+      castMembers: [],
+    }));
+  },
+  newSeries: async (
+    _parent: unknown,
+    args: { limit?: number; offset?: number },
+    ctx: { db: IDbClient }
+  ): Promise<Series[]> => {
+    const limit = args.limit ?? 50;
+    const offset = args.offset ?? 0;
+
+    const seriesList = await ctx.db.getNewSeries(limit, offset);
+
+    return seriesList.map((series) => ({
+      ...series,
+      ageRating: mapContentAgeRating(series.ageRating) as ContentAgeRating,
+      createdAt: series.createdAt.toISOString(),
+      hasUserWatched: null,
+      userRating: null,
+      seasons: [],
+      genres: [],
+      castMembers: [],
+    }));
+  },
+  popularSeries: async (
+    _parent: unknown,
+    args: { limit?: number; offset?: number },
+    ctx: { db: IDbClient }
+  ): Promise<Series[]> => {
+    const limit = args.limit ?? 50;
+    const offset = args.offset ?? 0;
+
+    const seriesList = await ctx.db.getPopularSeries(limit, offset);
+
+    return seriesList.map((series) => ({
+      ...series,
+      ageRating: mapContentAgeRating(series.ageRating) as ContentAgeRating,
+      createdAt: series.createdAt.toISOString(),
+      hasUserWatched: null,
+      userRating: null,
+      seasons: [],
+      genres: [],
+      castMembers: [],
+    }));
+  },
   season: () => {},
   seasons: () => {},
-
   episode: () => {},
   episodes: () => {},
 
