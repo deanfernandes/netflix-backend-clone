@@ -261,10 +261,48 @@ export const Query = {
       _seriesId: season.seriesId,
     } as Season & { _seriesId: string };
   },
+  seasons: async (
+    _parent: unknown,
+    { seriesId }: { seriesId: string },
+    ctx: { db: IDbClient }
+  ) => {
+    const seasons = await ctx.db.getSeasonsBySeriesId(seriesId);
 
-  seasons: () => {},
-  episode: () => {},
-  episodes: () => {},
+    return seasons.map((s) => ({
+      id: s.id,
+      number: s.number,
+      ageRating: mapContentAgeRating(s.ageRating),
+      releaseYear: s.releaseYear,
+      _seriesId: s.seriesId,
+    }));
+  },
+  episode: async (
+    _parent: unknown,
+    { id }: { id: string },
+    ctx: { db: IDbClient }
+  ) => {
+    const episode = await ctx.db.getEpisodeById(id);
+    if (!episode) return null;
+
+    return {
+      ...episode,
+      __typename: "Episode",
+      _seasonId: episode.seasonId,
+    };
+  },
+
+  episodes: async (
+    _parent: unknown,
+    { seasonId }: { seasonId: string },
+    ctx: { db: IDbClient }
+  ) => {
+    const episodes = await ctx.db.getEpisodesBySeasonId(seasonId);
+    return episodes.map((ep) => ({
+      ...ep,
+      __typename: "Episode",
+      _seasonId: ep.seasonId,
+    }));
+  },
 
   watchlist: () => {},
 };

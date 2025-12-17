@@ -562,4 +562,33 @@ export default class PgDbClient implements IDbClient {
       seasonId: row.season_id,
     }));
   }
+  async getEpisodeById(id: string) {
+    const res = await this.pool.query(
+      `
+    SELECT
+      id,
+      title,
+      synopsis,
+      duration_minutes,
+      number,
+      season_id
+    FROM episodes
+    WHERE id = $1
+    LIMIT 1
+    `,
+      [id]
+    );
+
+    const row = res.rows[0];
+    if (!row) return null;
+
+    return {
+      id: row.id.toString(),
+      title: row.title,
+      synopsis: row.synopsis,
+      durationMinutes: row.duration_minutes,
+      number: row.number,
+      seasonId: row.season_id.toString(),
+    };
+  }
 }
