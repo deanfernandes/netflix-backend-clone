@@ -227,8 +227,8 @@ export default class PgDbClient implements IDbClient {
   async getProfileFilmRating(
     accountProfileId: string,
     filmId: string
-  ): Promise<number | null> {
-    const res = await this.pool.query<{ rating: number }>(
+  ): Promise<ContentRating | null> {
+    const res = await this.pool.query<{ rating: ContentRating }>(
       `
     SELECT rating
     FROM account_profile_film_ratings

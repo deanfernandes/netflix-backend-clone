@@ -77,6 +77,31 @@ export const mockAccountMembershipPlans = [
   },
 ];
 
+export const mockFilms = [
+  {
+    id: "1",
+    title: "Test Film",
+    synopsis: "Test synopsis",
+    releaseYear: 2023,
+    ageRating: "PG",
+    createdAt: new Date().toISOString(),
+  },
+];
+
+export const mockGenres = [
+  {
+    id: "1",
+    name: "Action",
+  },
+];
+
+export const mockCastMembers = [
+  {
+    id: "1",
+    name: "Actor One",
+  },
+];
+
 export const dbMocks = {
   getAccounts: async (limit?: number, offset?: number) => {
     const start = offset ?? 0;
@@ -100,5 +125,18 @@ export const dbMocks = {
     mockAccountMemberships.find((m) => m.id === id) ?? null,
 
   getAccountMembershipPlanById: async (id: string) =>
-    mockAccountMembershipPlans.find((p) => p.id === id) ?? null,
+    mockAccountMembershipPlans.find((p) => p.id === Number(id)) ?? null,
+
+  getFilmById: async (id: string) => mockFilms.find((f) => f.id === id) ?? null,
+
+  hasProfileWatchedFilm: async (_profileId: string, filmId: string) =>
+    !!mockFilms.find((f) => f.id === filmId),
+
+  getProfileFilmRating: async (_profileId: string, filmId: string) =>
+    mockFilms.find((f) => f.id === filmId) ? "thumbs_up" : null,
+
+  getFilmGenres: async (filmId: string) => (filmId === "1" ? mockGenres : []),
+
+  getFilmCastMembers: async (filmId: string) =>
+    filmId === "1" ? mockCastMembers : [],
 };

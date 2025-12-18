@@ -15,7 +15,6 @@ export const Query = {
   ) => {
     return await ctx.db.getAccountById(args.id);
   },
-
   accounts: async (
     _parent: any,
     { limit, offset }: { limit?: number; offset?: number },
@@ -31,7 +30,6 @@ export const Query = {
   ) => {
     return await ctx.db.getAccountProfileById(id);
   },
-
   accountProfiles: async (
     _parent: any,
     { accountId }: { accountId: string },
@@ -39,7 +37,6 @@ export const Query = {
   ) => {
     return await ctx.db.getAccountProfilesByAccountId(accountId);
   },
-
   accountMembership: async (
     _parent: any,
     { id }: { id: string },
@@ -49,7 +46,6 @@ export const Query = {
     if (!membership) return null;
     return { ...membership, status: membership.status.toUpperCase() };
   },
-
   accountMemberships: async (
     _parent: any,
     { accountId }: { accountId: string },
@@ -86,12 +82,11 @@ export const Query = {
       ...film,
       ageRating: mapContentAgeRating(film.ageRating) as ContentAgeRating,
       hasUserWatched,
-      userRating,
+      userRating: userRating?.toUpperCase() as ContentRating | null,
       genres: [],
       castMembers: [],
     };
   },
-
   films: async (
     _parent: any,
     args: {
@@ -120,7 +115,6 @@ export const Query = {
       castMembers: [],
     }));
   },
-
   newFilms: async (
     _parent: any,
     args: { limit?: number | null; offset?: number | null },
@@ -136,7 +130,6 @@ export const Query = {
       castMembers: [],
     }));
   },
-
   popularFilms: async (
     _parent: any,
     args: { limit?: number | null; offset?: number | null },
@@ -298,7 +291,6 @@ export const Query = {
       _seasonId: episode.seasonId,
     };
   },
-
   episodes: async (
     _parent: unknown,
     { seasonId }: { seasonId: string },

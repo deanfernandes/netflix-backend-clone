@@ -31,7 +31,7 @@ export default interface IDbClient {
   getProfileFilmRating(
     accountProfileId: string,
     filmId: string
-  ): Promise<number | null>;
+  ): Promise<ContentRating | null>;
   getFilmGenres(filmId: string): Promise<Genre[]>;
   getFilmCastMembers(filmId: string): Promise<CastMember[]>;
   getFilms(options: {
