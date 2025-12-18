@@ -1,6 +1,6 @@
-import { ContentAgeRating } from "./Content";
+import { ContentAgeRating } from "./Content.js";
 
-export interface Series {
+export interface Film {
   id: string;
   title: string;
   synopsis: string;
@@ -9,15 +9,15 @@ export interface Series {
   createdAt: Date;
 }
 
-export interface SeriesView {
+export interface FilmView {
   id: string;
-  seriesId: string;
+  filmId: string;
   accountProfileId: string;
 }
 
-export interface SeriesRating {
+export interface FilmRating {
   id: string;
   rating: "thumbs_up" | "thumbs_down" | "double_thumbs_up";
-  seriesId: string;
+  filmId: string;
   accountProfileId: string;
 }
