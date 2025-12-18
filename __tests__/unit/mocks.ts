@@ -1,3 +1,7 @@
+import { Episode } from "../../src/db/models/Episode";
+import { Season } from "../../src/db/models/Season";
+import { Series } from "../../src/db/models/Series";
+
 export const mockAccount = {
   id: "1",
   email: "user1@example.com",
@@ -80,25 +84,164 @@ export const mockAccountMembershipPlans = [
 export const mockFilms = [
   {
     id: "1",
-    title: "Test Film",
-    synopsis: "Test synopsis",
+    title: "Action Movie",
+    synopsis: "An action-packed movie",
     releaseYear: 2023,
     ageRating: "PG",
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "2",
+    title: "Drama Movie",
+    synopsis: "A dramatic story",
+    releaseYear: 2022,
+    ageRating: "15",
     createdAt: new Date().toISOString(),
   },
 ];
 
 export const mockGenres = [
-  {
-    id: "1",
-    name: "Action",
-  },
+  { id: "1", name: "Action" },
+  { id: "2", name: "Drama" },
 ];
 
 export const mockCastMembers = [
+  { id: "1", name: "Actor One" },
+  { id: "2", name: "Actor Two" },
+];
+
+export const mockSeriesList = [
   {
     id: "1",
-    name: "Actor One",
+    title: "Epic Adventure",
+    synopsis: "An epic journey across the world.",
+    releaseYear: 2023,
+    ageRating: "PG",
+    createdAt: new Date(),
+    userRating: "thumbs_up",
+  },
+  {
+    id: "2",
+    title: "Drama Series",
+    synopsis: "A compelling dramatic story.",
+    releaseYear: 2022,
+    ageRating: "15",
+    createdAt: new Date(),
+    userRating: "thumbs_down",
+  },
+];
+
+export const mockSeasons: Season[] = [
+  {
+    id: "1",
+    number: 1,
+    ageRating: "PG",
+    releaseYear: 2023,
+    seriesId: "1",
+  },
+  {
+    id: "2",
+    number: 2,
+    ageRating: "12",
+    releaseYear: 2024,
+    seriesId: "1",
+  },
+];
+
+export const mockSeriesGenres = [
+  { id: "1", name: "Action" },
+  { id: "2", name: "Drama" },
+];
+
+export const mockSeriesCastMembers = [
+  { id: "1", name: "Actor One" },
+  { id: "2", name: "Actor Two" },
+];
+
+export const mockNewSeriesList: Series[] = [
+  {
+    id: "1",
+    title: "Galactic Adventures",
+    synopsis: "A sci-fi epic across the galaxy.",
+    releaseYear: 2025,
+    ageRating: "PG",
+    createdAt: new Date(),
+    userRating: null,
+  },
+  {
+    id: "2",
+    title: "Mystery Manor",
+    synopsis: "Unravel secrets in an old mansion.",
+    releaseYear: 2024,
+    ageRating: "12",
+    createdAt: new Date(),
+    userRating: null,
+  },
+  {
+    id: "3",
+    title: "Comedy Nights",
+    synopsis: "Laughs and pranks in every episode.",
+    releaseYear: 2023,
+    ageRating: "U",
+    createdAt: new Date(),
+    userRating: null,
+  },
+];
+
+export const mockPopularSeriesList: Series[] = [
+  {
+    id: "1",
+    title: "Galactic Adventures",
+    synopsis: "A sci-fi epic across the galaxy.",
+    releaseYear: 2025,
+    ageRating: "PG",
+    createdAt: new Date(),
+    userRating: null,
+  },
+  {
+    id: "2",
+    title: "Mystery Manor",
+    synopsis: "Unravel secrets in an old mansion.",
+    releaseYear: 2024,
+    ageRating: "12",
+    createdAt: new Date(),
+    userRating: null,
+  },
+  {
+    id: "3",
+    title: "Comedy Nights",
+    synopsis: "Laughs and pranks in every episode.",
+    releaseYear: 2023,
+    ageRating: "U",
+    createdAt: new Date(),
+    userRating: null,
+  },
+];
+
+export const mockEpisodes = [
+  {
+    id: "1",
+    title: "Pilot Episode",
+    synopsis: "The story begins with an unexpected event.",
+    durationMinutes: 45,
+    number: 1,
+    seasonId: "1",
+  },
+  {
+    id: "2",
+    title: "Second Episode",
+    synopsis: "Tensions rise as new challenges appear.",
+    durationMinutes: 50,
+    number: 2,
+    seasonId: "1",
+  },
+  {
+    id: "3",
+    title: "Third Episode",
+    synopsis: "Secrets are revealed, changing everything.",
+    durationMinutes: 48,
+    number: 3,
+    seasonId: "2",
   },
 ];
 
@@ -128,15 +271,97 @@ export const dbMocks = {
     mockAccountMembershipPlans.find((p) => p.id === Number(id)) ?? null,
 
   getFilmById: async (id: string) => mockFilms.find((f) => f.id === id) ?? null,
-
   hasProfileWatchedFilm: async (_profileId: string, filmId: string) =>
     !!mockFilms.find((f) => f.id === filmId),
-
   getProfileFilmRating: async (_profileId: string, filmId: string) =>
     mockFilms.find((f) => f.id === filmId) ? "thumbs_up" : null,
+  getFilmGenres: async (filmId: string) => mockGenres,
 
-  getFilmGenres: async (filmId: string) => (filmId === "1" ? mockGenres : []),
+  getFilmCastMembers: async (filmId: string) => mockCastMembers,
 
-  getFilmCastMembers: async (filmId: string) =>
-    filmId === "1" ? mockCastMembers : [],
+  getFilms: async (args: {
+    genreIds?: string[] | null;
+    ageRating?: string | null;
+    search?: string | null;
+    limit?: number | null;
+    offset?: number | null;
+  }) => {
+    let films = [...mockFilms];
+
+    if (args.ageRating) {
+      films = films.filter((f) => f.ageRating === args.ageRating);
+    }
+
+    if (args.genreIds && args.genreIds.length > 0) {
+      films = films.filter((f) => f.id === "1" || f.id === "2"); // stub logic
+    }
+
+    if (args.search) {
+      films = films.filter((f) =>
+        f.title.toLowerCase().includes(args.search.toLowerCase())
+      );
+    }
+
+    const offset = args.offset ?? 0;
+    const limit = args.limit ?? 20;
+
+    return films.slice(offset, offset + limit);
+  },
+  getNewFilms: async (limit: number = 20) => {
+    const sorted = [...mockFilms].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+    return sorted.slice(0, limit);
+  },
+  getPopularFilms: async (limit: number = 20) => {
+    const sorted = [...mockFilms].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+    return sorted.slice(0, limit);
+  },
+
+  getSeriesList: async (limit: number = 50, offset: number = 0) => {
+    const series = [...mockSeriesList];
+    return series.slice(offset, offset + limit);
+  },
+
+  getSeasonsBySeriesId: async (seriesId: string) => {
+    return mockSeasons.filter((s) => s.seriesId === seriesId);
+  },
+  getGenresBySeriesId: async (seriesId: string) => {
+    return mockSeriesGenres;
+  },
+  getCastMembersBySeriesId: async (seriesId: string) => {
+    return mockSeriesCastMembers;
+  },
+  getSeriesById: async (id: string) => {
+    return mockSeriesList.find((s) => s.id === id) ?? null;
+  },
+  hasUserWatchedSeries: async (seriesId: string, profileId: string) => {
+    return false;
+  },
+  getUserSeriesRating: async (seriesId: string, profileId: string) => {
+    return mockSeriesList.find((s) => s.id === seriesId)?.userRating ?? null;
+  },
+  getNewSeries: async (limit?: number, offset?: number): Promise<Series[]> => {
+    return mockNewSeriesList;
+  },
+  getPopularSeries: async (
+    limit?: number,
+    offset?: number
+  ): Promise<Series[]> => {
+    return mockPopularSeriesList;
+  },
+  getEpisodesBySeasonId: async (seasonId: string): Promise<Episode[]> => {
+    return mockEpisodes;
+  },
+  getSeasonById: async (id: string): Promise<Season | null> => {
+    return mockSeasons.find((s) => s.id === id) || null;
+  },
+
+  getEpisodeById: async (id: string): Promise<Episode | null> => {
+    return mockEpisodes.find((e) => e.id === id) || null;
+  },
 };

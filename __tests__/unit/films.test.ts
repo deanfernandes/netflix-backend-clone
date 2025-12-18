@@ -12,10 +12,10 @@ afterAll(async () => {
 });
 
 describe("query", () => {
-  test("film all base fields", async () => {
+  test("films all base fields", async () => {
     const query = `
-      query ($filmId: ID!) {
-        film(id: $filmId) {
+      query ($limit: Int, $offset: Int) {
+        films(limit: $limit, offset: $offset) {
           id
           title
           ageRating
@@ -25,7 +25,7 @@ describe("query", () => {
       }
     `;
 
-    const variables = { filmId: "1" };
+    const variables = { limit: 20, offset: 0 };
 
     const response = await fetch(url, {
       method: "POST",
@@ -37,16 +37,17 @@ describe("query", () => {
 
     expect(errors).toBeUndefined();
     expect(data).toBeDefined();
-    expect(data.film).toBeDefined();
-    expect(data.film.id).toBe("1");
-    expect(data.film.title).toBe(mockFilms[0].title);
+    expect(Array.isArray(data.films)).toBe(true);
+    expect(data.films.length).toBe(mockFilms.length);
+    expect(data.films[0].id).toBe(mockFilms[0].id);
+    expect(data.films[0].title).toBe(mockFilms[0].title);
   });
 
   describe("field resolvers", () => {
     test("genres all fields", async () => {
       const query = `
-        query ($filmId: ID!) {
-          film(id: $filmId) {
+        query ($limit: Int, $offset: Int) {
+          films(limit: $limit, offset: $offset) {
             genres {
               id
               name
@@ -55,7 +56,7 @@ describe("query", () => {
         }
       `;
 
-      const variables = { filmId: "1" };
+      const variables = { limit: 20, offset: 0 };
 
       const response = await fetch(url, {
         method: "POST",
@@ -67,15 +68,15 @@ describe("query", () => {
 
       expect(errors).toBeUndefined();
       expect(data).toBeDefined();
-      expect(data.film).toBeDefined();
-      expect(Array.isArray(data.film.genres)).toBe(true);
-      expect(data.film.genres.length).toBe(mockGenres.length);
+      expect(Array.isArray(data.films)).toBe(true);
+      expect(Array.isArray(data.films[0].genres)).toBe(true);
+      expect(data.films[0].genres.length).toBe(mockGenres.length);
     });
 
     test("castMembers all fields", async () => {
       const query = `
-        query ($filmId: ID!) {
-          film(id: $filmId) {
+        query ($limit: Int, $offset: Int) {
+          films(limit: $limit, offset: $offset) {
             castMembers {
               id
               name
@@ -84,7 +85,7 @@ describe("query", () => {
         }
       `;
 
-      const variables = { filmId: "1" };
+      const variables = { limit: 20, offset: 0 };
 
       const response = await fetch(url, {
         method: "POST",
@@ -96,9 +97,9 @@ describe("query", () => {
 
       expect(errors).toBeUndefined();
       expect(data).toBeDefined();
-      expect(data.film).toBeDefined();
-      expect(Array.isArray(data.film.castMembers)).toBe(true);
-      expect(data.film.castMembers.length).toBe(mockCastMembers.length);
+      expect(Array.isArray(data.films)).toBe(true);
+      expect(Array.isArray(data.films[0].castMembers)).toBe(true);
+      expect(data.films[0].castMembers.length).toBe(mockCastMembers.length);
     });
   });
 });
