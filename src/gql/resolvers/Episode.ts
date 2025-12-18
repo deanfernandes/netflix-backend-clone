@@ -1,4 +1,5 @@
 import IDbClient from "../../db/IDbClient.js";
+import { mapContentAgeRating } from "../../utils/enumMaps.js";
 
 export const EpisodeResolver = {
   season: async (
@@ -14,7 +15,7 @@ export const EpisodeResolver = {
       id: season.id.toString(),
       number: season.number,
       releaseYear: season.releaseYear,
-      ageRating: season.ageRating,
+      ageRating: mapContentAgeRating(season.ageRating),
       episodes: [],
       series: null,
     };

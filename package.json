@@ -3,8 +3,12 @@
     "@graphql-codegen/cli": "6.1.0",
     "@graphql-codegen/typescript": "5.0.6",
     "@graphql-codegen/typescript-resolvers": "5.1.4",
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.10.1",
     "@types/pg": "^8.15.6",
+    "dotenv": "^17.2.3",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6",
     "typescript": "^5.9.3"
   },
   "dependencies": {
@@ -17,7 +21,8 @@
     "codegen": "graphql-codegen --config codegen.ts",
     "build": "tsc",
     "clean": "rm -rf dist",
-    "start": "node --env-file=.env dist/index.js"
+    "start": "node --env-file=.env dist/index.js",
+    "test": "jest"
   },
   "type": "module"
 }

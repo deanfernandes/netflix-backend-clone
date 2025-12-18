@@ -96,19 +96,19 @@ export default class PgDbClient implements IDbClient {
   ): Promise<AccountMembership | null> {
     const res = await this.pool.query(
       `
-      SELECT
-        id,
-        start_date,
-        end_date,
-        status,
-        auto_renew,
-        account_id,
-        account_membership_plan_id,
-        account_membership_price
-      FROM account_memberships
-      WHERE id = $1
-      LIMIT 1
-      `,
+    SELECT
+      id,
+      start_date,
+      end_date,
+      status,
+      auto_renew,
+      account_id,
+      account_membership_plan_id,
+      account_membership_price
+    FROM account_memberships
+    WHERE id = $1
+    LIMIT 1
+    `,
       [id]
     );
 
@@ -119,7 +119,7 @@ export default class PgDbClient implements IDbClient {
       id: row.id,
       startDate: row.start_date,
       endDate: row.end_date,
-      status: row.status.toUpperCase(),
+      status: row.status,
       autoRenew: row.auto_renew,
       accountId: row.account_id,
       accountMembershipPlanId: row.account_membership_plan_id,
@@ -227,8 +227,8 @@ export default class PgDbClient implements IDbClient {
   async getProfileFilmRating(
     accountProfileId: string,
     filmId: string
-  ): Promise<number | null> {
-    const res = await this.pool.query<{ rating: number }>(
+  ): Promise<ContentRating | null> {
+    const res = await this.pool.query<{ rating: ContentRating }>(
       `
     SELECT rating
     FROM account_profile_film_ratings
@@ -348,18 +348,18 @@ export default class PgDbClient implements IDbClient {
   async getPopularFilms(limit: number = 20): Promise<Film[]> {
     const query = `
     SELECT 
-      f.id,
-      f.title,
-      f.synopsis,
-      f.release_year AS "releaseYear",
-      f.age_rating AS "ageRating",
-      f.created_at AS "createdAt",
-      COUNT(fv.id) AS view_count
-    FROM films f
-    LEFT JOIN film_views fv ON fv.film_id = f.id
-    GROUP BY f.id
-    ORDER BY view_count DESC, f.created_at DESC
-    LIMIT $1
+  f.id,
+  f.title,
+  f.synopsis,
+  f.release_year AS "releaseYear",
+  f.age_rating AS "ageRating",
+  f.created_at AS "createdAt",
+  COUNT(apfv.id) AS view_count
+FROM films f
+LEFT JOIN account_profile_film_views apfv ON apfv.film_id = f.id
+GROUP BY f.id
+ORDER BY view_count DESC, f.created_at DESC
+LIMIT $1
   `;
     const res = await this.pool.query<Film>(query, [limit]);
     return res.rows;
@@ -590,5 +590,12 @@ export default class PgDbClient implements IDbClient {
       number: row.number,
       seasonId: row.season_id.toString(),
     };
+  }
+
+  public async query(sql: string, params?: any[]) {
+    return this.pool.query(sql, params);
+  }
+  public async close() {
+    await this.pool.end();
   }
 }

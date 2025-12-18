@@ -31,7 +31,7 @@ export default interface IDbClient {
   getProfileFilmRating(
     accountProfileId: string,
     filmId: string
-  ): Promise<number | null>;
+  ): Promise<ContentRating | null>;
   getFilmGenres(filmId: string): Promise<Genre[]>;
   getFilmCastMembers(filmId: string): Promise<CastMember[]>;
   getFilms(options: {
@@ -60,12 +60,5 @@ export default interface IDbClient {
   getPopularSeries(limit?: number, offset?: number): Promise<Series[]>;
   getSeasonById(id: string): Promise<Season | null>;
   getEpisodesBySeasonId(seasonId: string): Promise<Episode[]>;
-  getEpisodeById(id: string): Promise<{
-    id: string;
-    title: string;
-    synopsis: string;
-    durationMinutes: number;
-    number: number;
-    seasonId: string;
-  } | null>;
+  getEpisodeById(id: string): Promise<Episode | null>;
 }
