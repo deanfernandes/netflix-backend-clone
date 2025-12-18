@@ -348,18 +348,18 @@ export default class PgDbClient implements IDbClient {
   async getPopularFilms(limit: number = 20): Promise<Film[]> {
     const query = `
     SELECT 
-      f.id,
-      f.title,
-      f.synopsis,
-      f.release_year AS "releaseYear",
-      f.age_rating AS "ageRating",
-      f.created_at AS "createdAt",
-      COUNT(fv.id) AS view_count
-    FROM films f
-    LEFT JOIN film_views fv ON fv.film_id = f.id
-    GROUP BY f.id
-    ORDER BY view_count DESC, f.created_at DESC
-    LIMIT $1
+  f.id,
+  f.title,
+  f.synopsis,
+  f.release_year AS "releaseYear",
+  f.age_rating AS "ageRating",
+  f.created_at AS "createdAt",
+  COUNT(apfv.id) AS view_count
+FROM films f
+LEFT JOIN account_profile_film_views apfv ON apfv.film_id = f.id
+GROUP BY f.id
+ORDER BY view_count DESC, f.created_at DESC
+LIMIT $1
   `;
     const res = await this.pool.query<Film>(query, [limit]);
     return res.rows;

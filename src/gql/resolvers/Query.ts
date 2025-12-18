@@ -22,7 +22,6 @@ export const Query = {
   ) => {
     return await ctx.db.getAccounts(limit, offset);
   },
-
   accountProfile: async (
     _parent: any,
     { id }: { id: string },
