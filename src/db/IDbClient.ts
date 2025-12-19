@@ -9,6 +9,7 @@ import { Series } from "./models/Series.js";
 import { Season } from "./models/Season.js";
 import { ContentRating } from "./models/Content.js";
 import { Episode } from "./models/Episode.js";
+import { WatchlistFilm, WatchlistSeries } from "./models/Watchlist.js";
 
 export default interface IDbClient {
   getAccountById(id: string): Promise<Account | null>;
@@ -61,4 +62,6 @@ export default interface IDbClient {
   getSeasonById(id: string): Promise<Season | null>;
   getEpisodesBySeasonId(seasonId: string): Promise<Episode[]>;
   getEpisodeById(id: string): Promise<Episode | null>;
+  getWatchlistFilms(profileId: number): Promise<WatchlistFilm[]>;
+  getWatchlistSeries(profileId: number): Promise<WatchlistSeries[]>;
 }

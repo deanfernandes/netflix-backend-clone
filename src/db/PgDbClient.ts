@@ -11,6 +11,7 @@ import { Series } from "./models/Series.js";
 import { ContentAgeRating, ContentRating } from "./models/Content.js";
 import { Season } from "./models/Season.js";
 import { Episode } from "./models/Episode.js";
+import { WatchlistFilm, WatchlistSeries } from "./models/Watchlist.js";
 
 export default class PgDbClient implements IDbClient {
   private pool: Pool;
@@ -590,6 +591,42 @@ LIMIT $1
       number: row.number,
       seasonId: row.season_id.toString(),
     };
+  }
+
+  async getWatchlistFilms(profileId: number): Promise<WatchlistFilm[]> {
+    const res = await this.pool.query(
+      `
+    SELECT
+      account_profile_id,
+      film_id
+    FROM account_profile_watchlist_films
+    WHERE account_profile_id = $1
+    `,
+      [profileId]
+    );
+
+    return res.rows.map((row) => ({
+      accountProfileId: Number(row.account_profile_id),
+      filmId: Number(row.film_id),
+    }));
+  }
+
+  async getWatchlistSeries(profileId: number): Promise<WatchlistSeries[]> {
+    const res = await this.pool.query(
+      `
+    SELECT
+      account_profile_id,
+      series_id
+    FROM account_profile_watchlist_series
+    WHERE account_profile_id = $1
+    `,
+      [profileId]
+    );
+
+    return res.rows.map((row) => ({
+      accountProfileId: Number(row.account_profile_id),
+      seriesId: Number(row.series_id),
+    }));
   }
 
   public async query(sql: string, params?: any[]) {
