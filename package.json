@@ -22,7 +22,9 @@
     "build": "tsc",
     "clean": "rm -rf dist",
     "start": "node --env-file=.env dist/index.js",
-    "test": "jest"
+    "test:unit": "jest __tests__/unit",
+    "test:integration": "jest --runInBand __tests__/integration",
+    "test": "npm run test:unit && npm run test:integration"
   },
   "type": "module"
 }
