@@ -10,6 +10,10 @@ import { FilmResolver } from "./gql/resolvers/Film.js";
 import { SeriesResolver } from "./gql/resolvers/index.js";
 import { SeasonResolver } from "./gql/resolvers/index.js";
 import { EpisodeResolver } from "./gql/resolvers/Episode.js";
+import {
+  WatchlistFilmResolver,
+  WatchlistSeriesResolver,
+} from "./gql/resolvers/Watchlist.js";
 
 export function createApolloServer() {
   const __dirname = process.cwd();
@@ -27,6 +31,8 @@ export function createApolloServer() {
     Series: SeriesResolver,
     Season: SeasonResolver,
     Episode: EpisodeResolver,
+    WatchlistFilm: WatchlistFilmResolver,
+    WatchlistSeries: WatchlistSeriesResolver,
   };
 
   return new ApolloServer({ typeDefs, resolvers });

@@ -5,6 +5,9 @@ import {
   ContentRating,
   Season,
   Series,
+  Watchlist,
+  WatchlistFilm,
+  WatchlistSeries,
 } from "../generated/graphql.js";
 
 export const Query = {
@@ -303,5 +306,23 @@ export const Query = {
     }));
   },
 
-  watchlist: () => {},
+  watchlist: async (
+    _parent: any,
+    { profileId }: { profileId: string },
+    ctx: { db: IDbClient }
+  ): Promise<Watchlist> => {
+    const films = await ctx.db.getWatchlistFilms(Number(profileId));
+    const series = await ctx.db.getWatchlistSeries(Number(profileId));
+
+    return {
+      films: films.map((wf) => ({
+        _filmId: wf.filmId,
+        addedAt: new Date().toISOString(),
+      })) as any,
+      series: series.map((ws) => ({
+        _seriesId: ws.seriesId,
+        addedAt: new Date().toISOString(),
+      })) as any,
+    };
+  },
 };

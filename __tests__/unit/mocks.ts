@@ -1,6 +1,7 @@
 import { Episode } from "../../src/db/models/Episode";
 import { Season } from "../../src/db/models/Season";
 import { Series } from "../../src/db/models/Series";
+import { WatchlistFilm, WatchlistSeries } from "../../src/db/models/Watchlist";
 
 export const mockAccount = {
   id: "1",
@@ -245,6 +246,14 @@ export const mockEpisodes = [
   },
 ];
 
+export const mockWatchlistFilms: WatchlistFilm[] = [
+  { accountProfileId: 1, filmId: 1 },
+];
+
+export const mockWatchlistSeries: WatchlistSeries[] = [
+  { accountProfileId: 1, seriesId: 1 },
+];
+
 export const dbMocks = {
   getAccounts: async (limit?: number, offset?: number) => {
     const start = offset ?? 0;
@@ -363,5 +372,15 @@ export const dbMocks = {
 
   getEpisodeById: async (id: string): Promise<Episode | null> => {
     return mockEpisodes.find((e) => e.id === id) || null;
+  },
+
+  getWatchlistFilms: async (profileId: number) => {
+    return mockWatchlistFilms.filter((wf) => wf.accountProfileId === profileId);
+  },
+
+  getWatchlistSeries: async (profileId: number) => {
+    return mockWatchlistSeries.filter(
+      (ws) => ws.accountProfileId === profileId
+    );
   },
 };
