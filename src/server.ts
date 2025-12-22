@@ -19,7 +19,7 @@ export function createApolloServer() {
   const __dirname = process.cwd();
 
   const typeDefs = gql(
-    readFileSync(path.resolve(__dirname, "src/gql/schema.graphql"), "utf-8")
+    readFileSync(path.resolve(__dirname, "dist/gql/schema.graphql"), "utf-8")
   );
 
   const resolvers = {
@@ -35,5 +35,5 @@ export function createApolloServer() {
     WatchlistSeries: WatchlistSeriesResolver,
   };
 
-  return new ApolloServer({ typeDefs, resolvers });
+  return new ApolloServer({ typeDefs, resolvers, introspection: true });
 }

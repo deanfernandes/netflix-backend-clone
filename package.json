@@ -19,7 +19,7 @@
   },
   "scripts": {
     "codegen": "graphql-codegen --config codegen.ts",
-    "build": "tsc",
+    "build": "tsc && cp src/gql/schema.graphql dist/gql/schema.graphql",
     "clean": "rm -rf dist",
     "start": "node --env-file=.env dist/index.js",
     "test:unit": "jest __tests__/unit",
