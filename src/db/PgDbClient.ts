@@ -17,7 +17,11 @@ export default class PgDbClient implements IDbClient {
   private pool: Pool;
 
   constructor() {
-    this.pool = new Pool();
+    this.pool = new Pool({
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    });
   }
 
   async getAccounts(
