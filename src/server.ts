@@ -14,6 +14,7 @@ import {
   WatchlistFilmResolver,
   WatchlistSeriesResolver,
 } from "./gql/resolvers/Watchlist.js";
+import { ApolloServerPluginLandingPageLocalDefault } from "@apollo/server/plugin/landingPage/default";
 
 export function createApolloServer() {
   const __dirname = process.cwd();
@@ -35,5 +36,10 @@ export function createApolloServer() {
     WatchlistSeries: WatchlistSeriesResolver,
   };
 
-  return new ApolloServer({ typeDefs, resolvers, introspection: true });
+  return new ApolloServer({
+    typeDefs,
+    resolvers,
+    introspection: true,
+    plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })],
+  });
 }
