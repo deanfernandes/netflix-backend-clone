@@ -18,9 +18,8 @@ export default class PgDbClient implements IDbClient {
 
   constructor() {
     this.pool = new Pool({
-      ssl: {
-        rejectUnauthorized: false,
-      },
+      ssl:
+        process.env.NODE_ENV === "test" ? false : { rejectUnauthorized: false },
     });
   }
 
