@@ -17,11 +17,15 @@ import {
 import { ApolloServerPluginLandingPageLocalDefault } from "@apollo/server/plugin/landingPage/default";
 
 export function createApolloServer() {
+  // Use process.cwd() for base path
   const __dirname = process.cwd();
 
-  const typeDefs = gql(
-    readFileSync(path.resolve(__dirname, "dist/gql/schema.graphql"), "utf-8")
-  );
+  const schemaPath =
+    process.env.NODE_ENV === "test"
+      ? path.resolve(__dirname, "src/gql/schema.graphql")
+      : path.resolve(__dirname, "dist/gql/schema.graphql");
+
+  const typeDefs = gql(readFileSync(schemaPath, "utf-8"));
 
   const resolvers = {
     Query,
