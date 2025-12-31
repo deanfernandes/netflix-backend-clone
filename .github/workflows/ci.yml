@@ -56,6 +56,7 @@ jobs:
           echo "PGHOST=localhost" >> .env.test
           echo "PGPORT=5432" >> .env.test
           echo "PGDATABASE=testdb" >> .env.test
+          echo "PGSSLMODE=disable" >> .env.test
           echo "NODE_ENV=test" >> .env.test
 
       - name: Run tests
