@@ -145,7 +145,7 @@ jobs:
             docker rm some-api || true
             docker run -d \
               --rm \
-              --env-file .env \
+              --env-file /home/ubuntu/.env \
               --name some-api \
               -p 4000:4000 \
-              ghcr.io/${{ github.repository }}:latest
+              ghcr.io/deanfernandes/netflix-backend-clone:latest
