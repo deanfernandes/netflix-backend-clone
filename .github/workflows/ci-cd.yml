@@ -141,6 +141,11 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             docker pull ghcr.io/${{ github.repository }}:latest
-            docker stop app || true
-            docker rm app || true
-            docker run -d --name app -p 80:3000 ghcr.io/${{ github.repository }}:latest
+            docker stop some-api || true
+            docker rm some-api || true
+            docker run -d \
+              --rm \
+              --env-file .env \
+              --name some-api \
+              -p 4000:4000 \
+              ghcr.io/${{ github.repository }}:latest
