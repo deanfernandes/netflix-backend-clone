@@ -3,8 +3,20 @@ name: CI/CD
 on:
   push:
     branches: [main]
+    paths:
+      - "src/**"
+      - "db/**" #migrations
+      - "package.json"
+      - "package-lock.json"
+      - "Dockerfile"
   pull_request:
     branches: [main]
+    paths:
+      - "src/**"
+      - "db/**" #migrations
+      - "package.json"
+      - "package-lock.json"
+      - "Dockerfile"
   workflow_dispatch: {}
   schedule:
     - cron: "0 3 1 * *"
