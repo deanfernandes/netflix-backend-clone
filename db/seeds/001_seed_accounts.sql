@@ -1,9 +1,9 @@
 BEGIN;
 
-INSERT INTO account_membership_plans (name, monthly_price)
+INSERT INTO account_membership_plans (name, monthly_price, stripe_price_id)
 VALUES 
-    ('Standard', 12.99),
-    ('Premium', 18.99)
+    ('Standard', 12.99, 'price_std_fake'),
+    ('Premium', 18.99, 'price_prem_fake')
 ON CONFLICT (name) DO NOTHING;
 
 WITH seed_accounts AS (
@@ -11,11 +11,12 @@ WITH seed_accounts AS (
         g AS id,
         'user' || g || '@example.com' AS email,
         '$2b$10$CwTycUXWue0Thq9StjUM0uJ8CkUyQSXHZoGXAF6ucpkECJu3p6gyy' AS password_hash,
-        '555' || lpad(g::text, 7, '0') AS mobile_number
+        '555' || lpad(g::text, 7, '0') AS mobile_number,
+        'cus_' || g AS stripe_customer_id
     FROM generate_series(1, 1000000) g
 )
-INSERT INTO accounts (email, password_hash, mobile_number)
-SELECT email, password_hash, mobile_number
+INSERT INTO accounts (email, password_hash, mobile_number, stripe_customer_id)
+SELECT email, password_hash, mobile_number, stripe_customer_id
 FROM seed_accounts;
 
 WITH profile_seed AS (
@@ -68,7 +69,11 @@ INSERT INTO account_memberships (
     auto_renew,
     account_id,
     account_membership_plan_id,
-    account_membership_price
+    account_membership_price,
+    stripe_subscription_id,
+    current_period_start,
+    current_period_end,
+    cancel_at_period_end
 )
 SELECT
     fm.start_date,
@@ -77,7 +82,11 @@ SELECT
     fm.auto_renew,
     fm.account_id,
     p.id AS plan_id,
-    p.monthly_price
+    p.monthly_price,
+    'sub_' || lpad(fm.account_id::text, 6, '0') || '_' || floor(random()*1000)::text,
+    fm.start_date,
+    fm.start_date + interval '30 days',
+    (random() < 0.2)
 FROM final_memberships fm
 JOIN account_membership_plans p ON p.id = fm.plan_id;
 
