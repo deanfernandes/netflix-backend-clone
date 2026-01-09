@@ -64,4 +64,8 @@ export default interface IDbClient {
   getEpisodeById(id: string): Promise<Episode | null>;
   getWatchlistFilms(profileId: number): Promise<WatchlistFilm[]>;
   getWatchlistSeries(profileId: number): Promise<WatchlistSeries[]>;
+  updateMembershipAutoRenew(
+    accountMembershipId: string,
+    autoRenew: boolean
+  ): Promise<AccountMembership | null>;
 }

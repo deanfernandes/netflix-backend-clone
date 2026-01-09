@@ -15,9 +15,9 @@ import {
   WatchlistSeriesResolver,
 } from "./gql/resolvers/Watchlist.js";
 import { ApolloServerPluginLandingPageLocalDefault } from "@apollo/server/plugin/landingPage/default";
+import { Mutation } from "./gql/resolvers/index.js";
 
 export function createApolloServer() {
-  // Use process.cwd() for base path
   const __dirname = process.cwd();
 
   const schemaPath =
@@ -38,6 +38,7 @@ export function createApolloServer() {
     Episode: EpisodeResolver,
     WatchlistFilm: WatchlistFilmResolver,
     WatchlistSeries: WatchlistSeriesResolver,
+    Mutation,
   };
 
   return new ApolloServer({

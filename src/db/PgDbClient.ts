@@ -638,4 +638,41 @@ LIMIT $1
   public async close() {
     await this.pool.end();
   }
+
+  async updateMembershipAutoRenew(
+    accountMembershipId: string,
+    autoRenew: boolean
+  ): Promise<AccountMembership | null> {
+    const res = await this.pool.query(
+      `
+    UPDATE account_memberships
+    SET auto_renew = $2
+    WHERE id = $1
+    RETURNING
+      id,
+      start_date,
+      end_date,
+      status,
+      auto_renew,
+      account_membership_price,
+      account_id,
+      account_membership_plan_id
+    `,
+      [accountMembershipId, autoRenew]
+    );
+
+    const row = res.rows[0];
+    if (!row) return null;
+
+    return {
+      id: row.id,
+      startDate: row.start_date,
+      endDate: row.end_date,
+      status: row.status,
+      autoRenew: row.auto_renew,
+      accountMembershipPrice: row.account_membership_price,
+      accountId: row.account_id,
+      accountMembershipPlanId: row.account_membership_plan_id,
+    };
+  }
 }
