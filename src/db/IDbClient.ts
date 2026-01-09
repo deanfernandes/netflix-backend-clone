@@ -68,4 +68,22 @@ export default interface IDbClient {
     accountMembershipId: string,
     autoRenew: boolean
   ): Promise<AccountMembership | null>;
+  cancelMembership(
+    accountMembershipId: string
+  ): Promise<AccountMembership | null>;
+  createProfile(
+    accountId: string,
+    name: string,
+    profileImageUrl?: string,
+    pin?: string
+  ): Promise<AccountProfile | null>;
+  updateProfile(
+    profileId: string,
+    name?: string,
+    profileImageUrl?: string,
+    pin?: string
+  ): Promise<AccountProfile | null>;
+  deleteProfile(profileId: string): Promise<boolean>;
+  setProfilePin(profileId: string, pin: string): Promise<AccountProfile | null>;
+  deleteProfilePin(profileId: string): Promise<AccountProfile | null>;
 }

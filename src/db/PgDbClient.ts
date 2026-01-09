@@ -675,4 +675,172 @@ LIMIT $1
       accountMembershipPlanId: row.account_membership_plan_id,
     };
   }
+  async cancelMembership(
+    accountMembershipId: string
+  ): Promise<AccountMembership | null> {
+    const res = await this.pool.query(
+      `
+    UPDATE account_memberships
+    SET status = 'cancelled'
+    WHERE id = $1
+    RETURNING
+      id,
+      start_date,
+      end_date,
+      status,
+      auto_renew,
+      account_membership_price,
+      account_id,
+      account_membership_plan_id
+    `,
+      [accountMembershipId]
+    );
+
+    const row = res.rows[0];
+    if (!row) return null;
+
+    return {
+      id: row.id,
+      startDate: row.start_date,
+      endDate: row.end_date,
+      status: row.status,
+      autoRenew: row.auto_renew,
+      accountMembershipPrice: row.account_membership_price,
+      accountId: row.account_id,
+      accountMembershipPlanId: row.account_membership_plan_id,
+    };
+  }
+  async createProfile(
+    accountId: string,
+    name: string,
+    profileImageUrl?: string,
+    pin?: string
+  ): Promise<AccountProfile | null> {
+    const res = await this.pool.query(
+      `
+    INSERT INTO account_profiles (account_id, name, profile_image_url, pin_hash)
+    VALUES ($1, $2, $3, $4)
+    RETURNING id, name, profile_image_url, account_id
+    `,
+      [accountId, name, profileImageUrl || null, pin]
+    );
+
+    const row = res.rows[0];
+    if (!row) return null;
+
+    //TODO: hash pin
+    return {
+      id: row.id,
+      name: row.name,
+      profileImageUrl: row.profile_image_url,
+      pinHash: pin ?? null,
+      accountId: row.account_id,
+    };
+  }
+  async updateProfile(
+    profileId: string,
+    name?: string,
+    profileImageUrl?: string,
+    pin?: string
+  ): Promise<AccountProfile | null> {
+    const fields: string[] = [];
+    const values: any[] = [];
+    let idx = 1;
+
+    if (name !== undefined) {
+      fields.push(`name = $${idx++}`);
+      values.push(name);
+    }
+    if (profileImageUrl !== undefined) {
+      fields.push(`profile_image_url = $${idx++}`);
+      values.push(profileImageUrl);
+    }
+    if (pin !== undefined) {
+      fields.push(`pin_hash = $${idx++}`);
+      values.push(pin);
+    }
+
+    if (fields.length === 0) return null;
+
+    values.push(profileId);
+
+    const res = await this.pool.query(
+      `
+    UPDATE account_profiles
+    SET ${fields.join(", ")}
+    WHERE id = $${idx}
+    RETURNING id, name, profile_image_url, pin_hash, account_id
+    `,
+      values
+    );
+
+    const row = res.rows[0];
+    if (!row) return null;
+
+    return {
+      id: row.id,
+      name: row.name,
+      profileImageUrl: row.profile_image_url,
+      pinHash: pin ?? null,
+      accountId: row.account_id,
+    };
+  }
+  async deleteProfile(profileId: string): Promise<boolean> {
+    const res = await this.pool.query(
+      `
+    DELETE FROM account_profiles
+    WHERE id = $1
+    `,
+      [profileId]
+    );
+
+    return !!(res?.rowCount && res.rowCount > 0);
+  }
+  async setProfilePin(
+    profileId: string,
+    pin: string
+  ): Promise<AccountProfile | null> {
+    const res = await this.pool.query(
+      `
+    UPDATE account_profiles
+    SET pin_hash = $2
+    WHERE id = $1
+    RETURNING id, name, profile_image_url, pin_hash, account_id
+    `,
+      [profileId, pin]
+    );
+
+    const row = res.rows[0];
+    if (!row) return null;
+
+    return {
+      id: row.id,
+      name: row.name,
+      profileImageUrl: row.profile_image_url,
+      pinHash: pin,
+      accountId: row.account_id,
+    };
+  }
+  async deleteProfilePin(profileId: string): Promise<AccountProfile | null> {
+    const res = await this.pool.query(
+      `
+    UPDATE account_profiles
+    SET pin_hash = NULL
+    WHERE id = $1
+    RETURNING id, name, profile_image_url, pin_hash, account_id
+    `,
+      [profileId]
+    );
+
+    const row = res.rows[0];
+    if (!row) return null;
+
+    return {
+      id: row.id,
+      name: row.name,
+      profileImageUrl: row.profile_image_url,
+      pinHash: row.pin_hash,
+      accountId: row.account_id,
+    };
+  }
 }
