@@ -64,6 +64,7 @@ export default interface IDbClient {
   getEpisodeById(id: string): Promise<Episode | null>;
   getWatchlistFilms(profileId: number): Promise<WatchlistFilm[]>;
   getWatchlistSeries(profileId: number): Promise<WatchlistSeries[]>;
+
   updateMembershipAutoRenew(
     accountMembershipId: string,
     autoRenew: boolean
@@ -71,6 +72,7 @@ export default interface IDbClient {
   cancelMembership(
     accountMembershipId: string
   ): Promise<AccountMembership | null>;
+
   createProfile(
     accountId: string,
     name: string,
@@ -86,4 +88,9 @@ export default interface IDbClient {
   deleteProfile(profileId: string): Promise<boolean>;
   setProfilePin(profileId: string, pin: string): Promise<AccountProfile | null>;
   deleteProfilePin(profileId: string): Promise<AccountProfile | null>;
+
+  addFilmToWatchlist(profileId: string, filmId: string): Promise<void>;
+  removeFilmFromWatchlist(profileId: string, filmId: string): Promise<void>;
+  addSeriesToWatchlist(profileId: string, seriesId: string): Promise<void>;
+  removeSeriesFromWatchlist(profileId: string, seriesId: string): Promise<void>;
 }

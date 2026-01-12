@@ -710,6 +710,7 @@ LIMIT $1
       accountMembershipPlanId: row.account_membership_plan_id,
     };
   }
+
   async createProfile(
     accountId: string,
     name: string,
@@ -842,5 +843,53 @@ LIMIT $1
       pinHash: row.pin_hash,
       accountId: row.account_id,
     };
+  }
+
+  async addFilmToWatchlist(profileId: string, filmId: string): Promise<void> {
+    await this.pool.query(
+      `
+    INSERT INTO account_profile_watchlist_films (account_profile_id, film_id)
+    VALUES ($1, $2)
+    ON CONFLICT DO NOTHING
+    `,
+      [profileId, filmId]
+    );
+  }
+  async removeFilmFromWatchlist(
+    profileId: string,
+    filmId: string
+  ): Promise<void> {
+    await this.pool.query(
+      `
+    DELETE FROM account_profile_watchlist_films
+    WHERE account_profile_id = $1 AND film_id = $2
+    `,
+      [profileId, filmId]
+    );
+  }
+  async addSeriesToWatchlist(
+    profileId: string,
+    seriesId: string
+  ): Promise<void> {
+    await this.pool.query(
+      `
+    INSERT INTO account_profile_watchlist_series (account_profile_id, series_id)
+    VALUES ($1, $2)
+    ON CONFLICT DO NOTHING
+    `,
+      [profileId, seriesId]
+    );
+  }
+  async removeSeriesFromWatchlist(
+    profileId: string,
+    seriesId: string
+  ): Promise<void> {
+    await this.pool.query(
+      `
+    DELETE FROM account_profile_watchlist_series
+    WHERE account_profile_id = $1 AND series_id = $2
+    `,
+      [profileId, seriesId]
+    );
   }
 }

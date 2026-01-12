@@ -1,8 +1,12 @@
 import {
+  MutationAddFilmToWatchlistArgs,
+  MutationAddSeriesToWatchlistArgs,
   MutationCancelMembershipArgs,
   MutationCreateProfileArgs,
   MutationDeleteProfileArgs,
   MutationDeleteProfilePinArgs,
+  MutationRemoveFilmFromWatchlistArgs,
+  MutationRemoveSeriesFromWatchlistArgs,
   MutationResolvers,
   MutationSetProfilePinArgs,
   MutationUpdateMembershipAutoRenewArgs,
@@ -99,15 +103,70 @@ export const Mutation: MutationResolvers = {
     if (!profile) throw new Error("Profile not found");
     return profile;
   },
+
+  addFilmToWatchlist: async (
+    _,
+    args: RequireFields<MutationAddFilmToWatchlistArgs, "profileId" | "filmId">,
+    context: any
+  ): Promise<ResolversTypes["WatchlistFilm"]> => {
+    await context.db.addFilmToWatchlist(args.profileId, args.filmId);
+
+    return {
+      film: undefined as any,
+      addedAt: new Date().toISOString(), //TODO: add db migration
+      _filmId: args.filmId,
+    } as unknown as ResolversTypes["WatchlistFilm"];
+  },
+  removeFilmFromWatchlist: async (
+    _,
+    args: RequireFields<
+      MutationRemoveFilmFromWatchlistArgs,
+      "profileId" | "filmId"
+    >,
+    context: any
+  ): Promise<ResolversTypes["Film"]> => {
+    await context.db.removeFilmFromWatchlist(args.profileId, args.filmId);
+
+    const film = await context.db.getFilmById(args.filmId);
+    if (!film) throw new Error("Film not found");
+
+    return film;
+  },
+  addSeriesToWatchlist: async (
+    _,
+    args: RequireFields<
+      MutationAddSeriesToWatchlistArgs,
+      "profileId" | "seriesId"
+    >,
+    context: any
+  ): Promise<ResolversTypes["WatchlistSeries"]> => {
+    await context.db.addSeriesToWatchlist(args.profileId, args.seriesId);
+
+    return {
+      _seriesId: args.seriesId,
+      addedAt: new Date().toISOString(), //TODO: db migration
+      series: undefined as any,
+    } as unknown as ResolversTypes["WatchlistSeries"];
+  },
+  removeSeriesFromWatchlist: async (
+    _,
+    args: RequireFields<
+      MutationRemoveSeriesFromWatchlistArgs,
+      "profileId" | "seriesId"
+    >,
+    context: any
+  ): Promise<ResolversTypes["Series"]> => {
+    await context.db.removeSeriesFromWatchlist(args.profileId, args.seriesId);
+
+    const series = await context.db.getSeriesById(args.seriesId);
+    if (!series) throw new Error("Series not found");
+
+    return series;
+  },
 };
 
 //TODO:
 /*
-  addFilmToWatchlist: () => {},
-  removeFilmFromWatchlist: () => {},
-  addSeriesToWatchlist: () => {},
-  removeSeriesFromWatchlist: () => {},
-
   rateFilm: () => {},
   removeFilmRating: () => {},
   rateSeries: () => {},
