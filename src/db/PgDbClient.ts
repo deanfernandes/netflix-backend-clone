@@ -892,4 +892,53 @@ LIMIT $1
       [profileId, seriesId]
     );
   }
+
+  async rateFilm(
+    profileId: string,
+    filmId: string,
+    rating: ContentRating
+  ): Promise<void> {
+    await this.pool.query(
+      `
+    INSERT INTO account_profile_film_ratings (account_profile_id, film_id, rating)
+    VALUES ($1, $2, $3)
+    ON CONFLICT (film_id, account_profile_id)
+    DO UPDATE SET rating = EXCLUDED.rating
+    `,
+      [profileId, filmId, rating]
+    );
+  }
+  async removeFilmRating(profileId: string, filmId: string): Promise<void> {
+    await this.pool.query(
+      `
+    DELETE FROM account_profile_film_ratings
+    WHERE account_profile_id = $1 AND film_id = $2
+    `,
+      [profileId, filmId]
+    );
+  }
+  async rateSeries(
+    profileId: string,
+    seriesId: string,
+    rating: string
+  ): Promise<void> {
+    await this.pool.query(
+      `
+    INSERT INTO account_profile_series_ratings (account_profile_id, series_id, rating)
+    VALUES ($1, $2, $3)
+    ON CONFLICT (series_id, account_profile_id)
+    DO UPDATE SET rating = EXCLUDED.rating
+    `,
+      [profileId, seriesId, rating]
+    );
+  }
+  async removeSeriesRating(profileId: string, seriesId: string): Promise<void> {
+    await this.pool.query(
+      `
+    DELETE FROM account_profile_series_ratings
+    WHERE account_profile_id = $1 AND series_id = $2
+    `,
+      [profileId, seriesId]
+    );
+  }
 }

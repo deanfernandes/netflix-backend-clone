@@ -1,3 +1,4 @@
+import { mapContentRatingToDb } from "../../utils/enumMaps.js";
 import {
   MutationAddFilmToWatchlistArgs,
   MutationAddSeriesToWatchlistArgs,
@@ -5,8 +6,12 @@ import {
   MutationCreateProfileArgs,
   MutationDeleteProfileArgs,
   MutationDeleteProfilePinArgs,
+  MutationRateFilmArgs,
+  MutationRateSeriesArgs,
   MutationRemoveFilmFromWatchlistArgs,
+  MutationRemoveFilmRatingArgs,
   MutationRemoveSeriesFromWatchlistArgs,
+  MutationRemoveSeriesRatingArgs,
   MutationResolvers,
   MutationSetProfilePinArgs,
   MutationUpdateMembershipAutoRenewArgs,
@@ -163,15 +168,72 @@ export const Mutation: MutationResolvers = {
 
     return series;
   },
+
+  rateFilm: async (
+    _,
+    args: RequireFields<
+      MutationRateFilmArgs,
+      "profileId" | "filmId" | "rating"
+    >,
+    context: any
+  ): Promise<ResolversTypes["Film"]> => {
+    const dbRating = mapContentRatingToDb(args.rating);
+
+    await context.db.rateFilm(args.profileId, args.filmId, dbRating);
+
+    const film = await context.db.getFilmById(args.filmId);
+    if (!film) throw new Error("Film not found");
+
+    return film;
+  },
+  removeFilmRating: async (
+    _,
+    args: RequireFields<MutationRemoveFilmRatingArgs, "profileId" | "filmId">,
+    context: any
+  ): Promise<ResolversTypes["Film"]> => {
+    await context.db.removeFilmRating(args.profileId, args.filmId);
+
+    const film = await context.db.getFilmById(args.filmId);
+    if (!film) throw new Error("Film not found");
+
+    return film;
+  },
+  rateSeries: async (
+    _,
+    args: RequireFields<
+      MutationRateSeriesArgs,
+      "profileId" | "seriesId" | "rating"
+    >,
+    context: any
+  ): Promise<ResolversTypes["Series"]> => {
+    const dbRating = mapContentRatingToDb(args.rating);
+
+    await context.db.rateSeries(args.profileId, args.seriesId, dbRating);
+
+    const series = await context.db.getSeriesById(args.seriesId);
+    if (!series) throw new Error("Series not found");
+
+    return series;
+  },
+  removeSeriesRating: async (
+    _,
+    args: RequireFields<
+      MutationRemoveSeriesRatingArgs,
+      "profileId" | "seriesId"
+    >,
+    context: any
+  ): Promise<ResolversTypes["Series"]> => {
+    await context.db.removeSeriesRating(args.profileId, args.seriesId);
+
+    const series = await context.db.getSeriesById(args.seriesId);
+    if (!series) throw new Error("Series not found");
+
+    return series;
+  },
 };
 
 //TODO:
 /*
-  rateFilm: () => {},
-  removeFilmRating: () => {},
-  rateSeries: () => {},
-  removeSeriesRating: () => {},
-
   markFilmWatched: () => {},
   markFilmUnwatched: () => {},
   markSeriesWatched: () => {},

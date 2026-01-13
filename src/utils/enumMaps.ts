@@ -29,3 +29,16 @@ export function mapContentRating(dbValue: string): ContentRating {
       throw new Error(`Unknown content rating: ${dbValue}`);
   }
 }
+
+export function mapContentRatingToDb(gqlValue: ContentRating): string {
+  switch (gqlValue) {
+    case "THUMBS_UP":
+      return "thumbs_up";
+    case "THUMBS_DOWN":
+      return "thumbs_down";
+    case "DOUBLE_THUMBS_UP":
+      return "double_thumbs_up";
+    default:
+      throw new Error(`Unknown GraphQL content rating: ${gqlValue}`);
+  }
+}

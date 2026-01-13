@@ -93,4 +93,17 @@ export default interface IDbClient {
   removeFilmFromWatchlist(profileId: string, filmId: string): Promise<void>;
   addSeriesToWatchlist(profileId: string, seriesId: string): Promise<void>;
   removeSeriesFromWatchlist(profileId: string, seriesId: string): Promise<void>;
+
+  rateFilm(
+    profileId: string,
+    filmId: string,
+    rating: ContentRating
+  ): Promise<void>;
+  removeFilmRating(profileId: string, filmId: string): Promise<void>;
+  rateSeries(
+    profileId: string,
+    seriesId: string,
+    rating: ContentRating
+  ): Promise<void>;
+  removeSeriesRating(profileId: string, seriesId: string): Promise<void>;
 }
