@@ -638,4 +638,354 @@ LIMIT $1
   public async close() {
     await this.pool.end();
   }
+
+  async updateMembershipAutoRenew(
+    accountMembershipId: string,
+    autoRenew: boolean
+  ): Promise<AccountMembership | null> {
+    const res = await this.pool.query(
+      `
+    UPDATE account_memberships
+    SET auto_renew = $2
+    WHERE id = $1
+    RETURNING
+      id,
+      start_date,
+      end_date,
+      status,
+      auto_renew,
+      account_membership_price,
+      account_id,
+      account_membership_plan_id
+    `,
+      [accountMembershipId, autoRenew]
+    );
+
+    const row = res.rows[0];
+    if (!row) return null;
+
+    return {
+      id: row.id,
+      startDate: row.start_date,
+      endDate: row.end_date,
+      status: row.status,
+      autoRenew: row.auto_renew,
+      accountMembershipPrice: row.account_membership_price,
+      accountId: row.account_id,
+      accountMembershipPlanId: row.account_membership_plan_id,
+    };
+  }
+  async cancelMembership(
+    accountMembershipId: string
+  ): Promise<AccountMembership | null> {
+    const res = await this.pool.query(
+      `
+    UPDATE account_memberships
+    SET status = 'cancelled'
+    WHERE id = $1
+    RETURNING
+      id,
+      start_date,
+      end_date,
+      status,
+      auto_renew,
+      account_membership_price,
+      account_id,
+      account_membership_plan_id
+    `,
+      [accountMembershipId]
+    );
+
+    const row = res.rows[0];
+    if (!row) return null;
+
+    return {
+      id: row.id,
+      startDate: row.start_date,
+      endDate: row.end_date,
+      status: row.status,
+      autoRenew: row.auto_renew,
+      accountMembershipPrice: row.account_membership_price,
+      accountId: row.account_id,
+      accountMembershipPlanId: row.account_membership_plan_id,
+    };
+  }
+
+  async createProfile(
+    accountId: string,
+    name: string,
+    profileImageUrl?: string,
+    pin?: string
+  ): Promise<AccountProfile | null> {
+    const res = await this.pool.query(
+      `
+    INSERT INTO account_profiles (account_id, name, profile_image_url, pin_hash)
+    VALUES ($1, $2, $3, $4)
+    RETURNING id, name, profile_image_url, account_id
+    `,
+      [accountId, name, profileImageUrl || null, pin]
+    );
+
+    const row = res.rows[0];
+    if (!row) return null;
+
+    //TODO: hash pin
+    return {
+      id: row.id,
+      name: row.name,
+      profileImageUrl: row.profile_image_url,
+      pinHash: pin ?? null,
+      accountId: row.account_id,
+    };
+  }
+  async updateProfile(
+    profileId: string,
+    name?: string,
+    profileImageUrl?: string,
+    pin?: string
+  ): Promise<AccountProfile | null> {
+    const fields: string[] = [];
+    const values: any[] = [];
+    let idx = 1;
+
+    if (name !== undefined) {
+      fields.push(`name = $${idx++}`);
+      values.push(name);
+    }
+    if (profileImageUrl !== undefined) {
+      fields.push(`profile_image_url = $${idx++}`);
+      values.push(profileImageUrl);
+    }
+    if (pin !== undefined) {
+      fields.push(`pin_hash = $${idx++}`);
+      values.push(pin);
+    }
+
+    if (fields.length === 0) return null;
+
+    values.push(profileId);
+
+    const res = await this.pool.query(
+      `
+    UPDATE account_profiles
+    SET ${fields.join(", ")}
+    WHERE id = $${idx}
+    RETURNING id, name, profile_image_url, pin_hash, account_id
+    `,
+      values
+    );
+
+    const row = res.rows[0];
+    if (!row) return null;
+
+    return {
+      id: row.id,
+      name: row.name,
+      profileImageUrl: row.profile_image_url,
+      pinHash: pin ?? null,
+      accountId: row.account_id,
+    };
+  }
+  async deleteProfile(profileId: string): Promise<boolean> {
+    const res = await this.pool.query(
+      `
+    DELETE FROM account_profiles
+    WHERE id = $1
+    `,
+      [profileId]
+    );
+
+    return !!(res?.rowCount && res.rowCount > 0);
+  }
+  async setProfilePin(
+    profileId: string,
+    pin: string
+  ): Promise<AccountProfile | null> {
+    const res = await this.pool.query(
+      `
+    UPDATE account_profiles
+    SET pin_hash = $2
+    WHERE id = $1
+    RETURNING id, name, profile_image_url, pin_hash, account_id
+    `,
+      [profileId, pin]
+    );
+
+    const row = res.rows[0];
+    if (!row) return null;
+
+    return {
+      id: row.id,
+      name: row.name,
+      profileImageUrl: row.profile_image_url,
+      pinHash: pin,
+      accountId: row.account_id,
+    };
+  }
+  async deleteProfilePin(profileId: string): Promise<AccountProfile | null> {
+    const res = await this.pool.query(
+      `
+    UPDATE account_profiles
+    SET pin_hash = NULL
+    WHERE id = $1
+    RETURNING id, name, profile_image_url, pin_hash, account_id
+    `,
+      [profileId]
+    );
+
+    const row = res.rows[0];
+    if (!row) return null;
+
+    return {
+      id: row.id,
+      name: row.name,
+      profileImageUrl: row.profile_image_url,
+      pinHash: row.pin_hash,
+      accountId: row.account_id,
+    };
+  }
+
+  async addFilmToWatchlist(profileId: string, filmId: string): Promise<void> {
+    await this.pool.query(
+      `
+    INSERT INTO account_profile_watchlist_films (account_profile_id, film_id)
+    VALUES ($1, $2)
+    ON CONFLICT DO NOTHING
+    `,
+      [profileId, filmId]
+    );
+  }
+  async removeFilmFromWatchlist(
+    profileId: string,
+    filmId: string
+  ): Promise<void> {
+    await this.pool.query(
+      `
+    DELETE FROM account_profile_watchlist_films
+    WHERE account_profile_id = $1 AND film_id = $2
+    `,
+      [profileId, filmId]
+    );
+  }
+  async addSeriesToWatchlist(
+    profileId: string,
+    seriesId: string
+  ): Promise<void> {
+    await this.pool.query(
+      `
+    INSERT INTO account_profile_watchlist_series (account_profile_id, series_id)
+    VALUES ($1, $2)
+    ON CONFLICT DO NOTHING
+    `,
+      [profileId, seriesId]
+    );
+  }
+  async removeSeriesFromWatchlist(
+    profileId: string,
+    seriesId: string
+  ): Promise<void> {
+    await this.pool.query(
+      `
+    DELETE FROM account_profile_watchlist_series
+    WHERE account_profile_id = $1 AND series_id = $2
+    `,
+      [profileId, seriesId]
+    );
+  }
+
+  async rateFilm(
+    profileId: string,
+    filmId: string,
+    rating: ContentRating
+  ): Promise<void> {
+    await this.pool.query(
+      `
+    INSERT INTO account_profile_film_ratings (account_profile_id, film_id, rating)
+    VALUES ($1, $2, $3)
+    ON CONFLICT (film_id, account_profile_id)
+    DO UPDATE SET rating = EXCLUDED.rating
+    `,
+      [profileId, filmId, rating]
+    );
+  }
+  async removeFilmRating(profileId: string, filmId: string): Promise<void> {
+    await this.pool.query(
+      `
+    DELETE FROM account_profile_film_ratings
+    WHERE account_profile_id = $1 AND film_id = $2
+    `,
+      [profileId, filmId]
+    );
+  }
+  async rateSeries(
+    profileId: string,
+    seriesId: string,
+    rating: string
+  ): Promise<void> {
+    await this.pool.query(
+      `
+    INSERT INTO account_profile_series_ratings (account_profile_id, series_id, rating)
+    VALUES ($1, $2, $3)
+    ON CONFLICT (series_id, account_profile_id)
+    DO UPDATE SET rating = EXCLUDED.rating
+    `,
+      [profileId, seriesId, rating]
+    );
+  }
+  async removeSeriesRating(profileId: string, seriesId: string): Promise<void> {
+    await this.pool.query(
+      `
+    DELETE FROM account_profile_series_ratings
+    WHERE account_profile_id = $1 AND series_id = $2
+    `,
+      [profileId, seriesId]
+    );
+  }
+
+  async markFilmWatched(profileId: string, filmId: string): Promise<void> {
+    await this.pool.query(
+      `
+    INSERT INTO account_profile_film_views (account_profile_id, film_id)
+    VALUES ($1, $2)
+    ON CONFLICT (film_id, account_profile_id)
+    DO NOTHING
+    `,
+      [profileId, filmId]
+    );
+  }
+  async markFilmUnwatched(profileId: string, filmId: string): Promise<void> {
+    await this.pool.query(
+      `
+    DELETE FROM account_profile_film_views
+    WHERE account_profile_id = $1
+      AND film_id = $2
+    `,
+      [profileId, filmId]
+    );
+  }
+  async markSeriesWatched(profileId: string, seriesId: string): Promise<void> {
+    await this.pool.query(
+      `
+    INSERT INTO account_profile_series_views (account_profile_id, series_id)
+    VALUES ($1, $2)
+    ON CONFLICT (series_id, account_profile_id)
+    DO NOTHING
+    `,
+      [profileId, seriesId]
+    );
+  }
+
+  async markSeriesUnwatched(
+    profileId: string,
+    seriesId: string
+  ): Promise<void> {
+    await this.pool.query(
+      `
+    DELETE FROM account_profile_series_views
+    WHERE account_profile_id = $1
+      AND series_id = $2
+    `,
+      [profileId, seriesId]
+    );
+  }
 }

@@ -200,14 +200,15 @@ type Mutation {
   deleteProfilePin(profileId: ID!): AccountProfile!
 
   addFilmToWatchlist(profileId: ID!, filmId: ID!): WatchlistFilm!
-  removeFilmFromWatchlist(profileId: ID!, filmId: ID!): WatchlistFilm!
+  removeFilmFromWatchlist(profileId: ID!, filmId: ID!): Film!
   addSeriesToWatchlist(profileId: ID!, seriesId: ID!): WatchlistSeries!
-  removeSeriesFromWatchlist(profileId: ID!, seriesId: ID!): WatchlistSeries!
+  removeSeriesFromWatchlist(profileId: ID!, seriesId: ID!): Series!
 
   rateFilm(profileId: ID!, filmId: ID!, rating: ContentRating!): Film!
   removeFilmRating(profileId: ID!, filmId: ID!): Film!
   rateSeries(profileId: ID!, seriesId: ID!, rating: ContentRating!): Series!
   removeSeriesRating(profileId: ID!, seriesId: ID!): Series!
+
   markFilmWatched(profileId: ID!, filmId: ID!): Film!
   markFilmUnwatched(profileId: ID!, filmId: ID!): Film!
   markSeriesWatched(profileId: ID!, seriesId: ID!): Series!

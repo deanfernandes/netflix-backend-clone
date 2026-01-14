@@ -128,9 +128,9 @@ export type Mutation = {
   markSeriesWatched: Series;
   rateFilm: Film;
   rateSeries: Series;
-  removeFilmFromWatchlist: WatchlistFilm;
+  removeFilmFromWatchlist: Film;
   removeFilmRating: Film;
-  removeSeriesFromWatchlist: WatchlistSeries;
+  removeSeriesFromWatchlist: Series;
   removeSeriesRating: Series;
   setProfilePin: AccountProfile;
   updateMembershipAutoRenew: AccountMembership;
@@ -637,9 +637,9 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   markSeriesWatched?: Resolver<ResolversTypes['Series'], ParentType, ContextType, RequireFields<MutationMarkSeriesWatchedArgs, 'profileId' | 'seriesId'>>;
   rateFilm?: Resolver<ResolversTypes['Film'], ParentType, ContextType, RequireFields<MutationRateFilmArgs, 'filmId' | 'profileId' | 'rating'>>;
   rateSeries?: Resolver<ResolversTypes['Series'], ParentType, ContextType, RequireFields<MutationRateSeriesArgs, 'profileId' | 'rating' | 'seriesId'>>;
-  removeFilmFromWatchlist?: Resolver<ResolversTypes['WatchlistFilm'], ParentType, ContextType, RequireFields<MutationRemoveFilmFromWatchlistArgs, 'filmId' | 'profileId'>>;
+  removeFilmFromWatchlist?: Resolver<ResolversTypes['Film'], ParentType, ContextType, RequireFields<MutationRemoveFilmFromWatchlistArgs, 'filmId' | 'profileId'>>;
   removeFilmRating?: Resolver<ResolversTypes['Film'], ParentType, ContextType, RequireFields<MutationRemoveFilmRatingArgs, 'filmId' | 'profileId'>>;
-  removeSeriesFromWatchlist?: Resolver<ResolversTypes['WatchlistSeries'], ParentType, ContextType, RequireFields<MutationRemoveSeriesFromWatchlistArgs, 'profileId' | 'seriesId'>>;
+  removeSeriesFromWatchlist?: Resolver<ResolversTypes['Series'], ParentType, ContextType, RequireFields<MutationRemoveSeriesFromWatchlistArgs, 'profileId' | 'seriesId'>>;
   removeSeriesRating?: Resolver<ResolversTypes['Series'], ParentType, ContextType, RequireFields<MutationRemoveSeriesRatingArgs, 'profileId' | 'seriesId'>>;
   setProfilePin?: Resolver<ResolversTypes['AccountProfile'], ParentType, ContextType, RequireFields<MutationSetProfilePinArgs, 'pin' | 'profileId'>>;
   updateMembershipAutoRenew?: Resolver<ResolversTypes['AccountMembership'], ParentType, ContextType, RequireFields<MutationUpdateMembershipAutoRenewArgs, 'accountMembershipId' | 'autoRenew'>>;

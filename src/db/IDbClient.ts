@@ -64,4 +64,51 @@ export default interface IDbClient {
   getEpisodeById(id: string): Promise<Episode | null>;
   getWatchlistFilms(profileId: number): Promise<WatchlistFilm[]>;
   getWatchlistSeries(profileId: number): Promise<WatchlistSeries[]>;
+
+  updateMembershipAutoRenew(
+    accountMembershipId: string,
+    autoRenew: boolean
+  ): Promise<AccountMembership | null>;
+  cancelMembership(
+    accountMembershipId: string
+  ): Promise<AccountMembership | null>;
+
+  createProfile(
+    accountId: string,
+    name: string,
+    profileImageUrl?: string,
+    pin?: string
+  ): Promise<AccountProfile | null>;
+  updateProfile(
+    profileId: string,
+    name?: string,
+    profileImageUrl?: string,
+    pin?: string
+  ): Promise<AccountProfile | null>;
+  deleteProfile(profileId: string): Promise<boolean>;
+  setProfilePin(profileId: string, pin: string): Promise<AccountProfile | null>;
+  deleteProfilePin(profileId: string): Promise<AccountProfile | null>;
+
+  addFilmToWatchlist(profileId: string, filmId: string): Promise<void>;
+  removeFilmFromWatchlist(profileId: string, filmId: string): Promise<void>;
+  addSeriesToWatchlist(profileId: string, seriesId: string): Promise<void>;
+  removeSeriesFromWatchlist(profileId: string, seriesId: string): Promise<void>;
+
+  rateFilm(
+    profileId: string,
+    filmId: string,
+    rating: ContentRating
+  ): Promise<void>;
+  removeFilmRating(profileId: string, filmId: string): Promise<void>;
+  rateSeries(
+    profileId: string,
+    seriesId: string,
+    rating: ContentRating
+  ): Promise<void>;
+  removeSeriesRating(profileId: string, seriesId: string): Promise<void>;
+
+  markFilmWatched(profileId: string, filmId: string): Promise<void>;
+  markFilmUnwatched(profileId: string, filmId: string): Promise<void>;
+  markSeriesWatched(profileId: string, seriesId: string): Promise<void>;
+  markSeriesUnwatched(profileId: string, seriesId: string): Promise<void>;
 }
