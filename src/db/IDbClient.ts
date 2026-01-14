@@ -106,4 +106,9 @@ export default interface IDbClient {
     rating: ContentRating
   ): Promise<void>;
   removeSeriesRating(profileId: string, seriesId: string): Promise<void>;
+
+  markFilmWatched(profileId: string, filmId: string): Promise<void>;
+  markFilmUnwatched(profileId: string, filmId: string): Promise<void>;
+  markSeriesWatched(profileId: string, seriesId: string): Promise<void>;
+  markSeriesUnwatched(profileId: string, seriesId: string): Promise<void>;
 }

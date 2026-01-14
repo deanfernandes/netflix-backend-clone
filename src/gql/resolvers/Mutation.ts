@@ -6,6 +6,10 @@ import {
   MutationCreateProfileArgs,
   MutationDeleteProfileArgs,
   MutationDeleteProfilePinArgs,
+  MutationMarkFilmUnwatchedArgs,
+  MutationMarkFilmWatchedArgs,
+  MutationMarkSeriesUnwatchedArgs,
+  MutationMarkSeriesWatchedArgs,
   MutationRateFilmArgs,
   MutationRateSeriesArgs,
   MutationRemoveFilmFromWatchlistArgs,
@@ -230,13 +234,60 @@ export const Mutation: MutationResolvers = {
 
     return series;
   },
-};
 
-//TODO:
-/*
-  markFilmWatched: () => {},
-  markFilmUnwatched: () => {},
-  markSeriesWatched: () => {},
-  markSeriesUnwatched: () => {},
+  markFilmWatched: async (
+    _,
+    args: RequireFields<MutationMarkFilmWatchedArgs, "profileId" | "filmId">,
+    context: any
+  ): Promise<ResolversTypes["Film"]> => {
+    await context.db.markFilmWatched(args.profileId, args.filmId);
+
+    const film = await context.db.getFilmById(args.filmId);
+    if (!film) throw new Error("Film not found");
+
+    return film;
+  },
+  markFilmUnwatched: async (
+    _,
+    args: RequireFields<MutationMarkFilmUnwatchedArgs, "profileId" | "filmId">,
+    context: any
+  ): Promise<ResolversTypes["Film"]> => {
+    await context.db.markFilmUnwatched(args.profileId, args.filmId);
+
+    const film = await context.db.getFilmById(args.filmId);
+    if (!film) throw new Error("Film not found");
+
+    return film;
+  },
+  markSeriesWatched: async (
+    _,
+    args: RequireFields<
+      MutationMarkSeriesWatchedArgs,
+      "profileId" | "seriesId"
+    >,
+    context: any
+  ): Promise<ResolversTypes["Series"]> => {
+    await context.db.markSeriesWatched(args.profileId, args.seriesId);
+
+    const series = await context.db.getSeriesById(args.seriesId);
+    if (!series) throw new Error("Series not found");
+
+    return series;
+  },
+
+  markSeriesUnwatched: async (
+    _,
+    args: RequireFields<
+      MutationMarkSeriesUnwatchedArgs,
+      "profileId" | "seriesId"
+    >,
+    context: any
+  ): Promise<ResolversTypes["Series"]> => {
+    await context.db.markSeriesUnwatched(args.profileId, args.seriesId);
+
+    const series = await context.db.getSeriesById(args.seriesId);
+    if (!series) throw new Error("Series not found");
+
+    return series;
+  },
 };
-*/

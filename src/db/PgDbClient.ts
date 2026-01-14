@@ -941,4 +941,51 @@ LIMIT $1
       [profileId, seriesId]
     );
   }
+
+  async markFilmWatched(profileId: string, filmId: string): Promise<void> {
+    await this.pool.query(
+      `
+    INSERT INTO account_profile_film_views (account_profile_id, film_id)
+    VALUES ($1, $2)
+    ON CONFLICT (film_id, account_profile_id)
+    DO NOTHING
+    `,
+      [profileId, filmId]
+    );
+  }
+  async markFilmUnwatched(profileId: string, filmId: string): Promise<void> {
+    await this.pool.query(
+      `
+    DELETE FROM account_profile_film_views
+    WHERE account_profile_id = $1
+      AND film_id = $2
+    `,
+      [profileId, filmId]
+    );
+  }
+  async markSeriesWatched(profileId: string, seriesId: string): Promise<void> {
+    await this.pool.query(
+      `
+    INSERT INTO account_profile_series_views (account_profile_id, series_id)
+    VALUES ($1, $2)
+    ON CONFLICT (series_id, account_profile_id)
+    DO NOTHING
+    `,
+      [profileId, seriesId]
+    );
+  }
+
+  async markSeriesUnwatched(
+    profileId: string,
+    seriesId: string
+  ): Promise<void> {
+    await this.pool.query(
+      `
+    DELETE FROM account_profile_series_views
+    WHERE account_profile_id = $1
+      AND series_id = $2
+    `,
+      [profileId, seriesId]
+    );
+  }
 }
